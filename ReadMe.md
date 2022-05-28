@@ -92,6 +92,11 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
 ```
 
+```bash
+git clone https://github.com/zsh-users/zsh-autosuggestions.git
+echo "source ${(q-)PWD}/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
+```
+
 ## tmux
 
-[](includes/tmux.md)
+[tmux](includes/tmux.md)

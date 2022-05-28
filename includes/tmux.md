@@ -1,0 +1,121 @@
+#env
+
+##install
+
+```
+brew install tmux
+```
+
+```
+sudo apt-get install tmux
+```
+
+##run
+
+```
+tmux
+```
+
+#ShortCut
+
+##Session
+
+create session with number
+
+```
+tmux
+```
+
+create session with name
+
+```
+tmux new -s <session-name>
+```
+
+change session name
+
+```
+[Ctrl] + b, $
+```
+
+detach from session
+
+```
+[Ctrl] + b, d
+```
+
+attach to session
+
+```
+tmux attach -t <number or name>
+```
+
+```
+tmux ls
+```
+
+## window
+
+create window
+
+```
+[Ctrl] + b, c
+```
+
+terminate window
+
+```
+[Ctrl] + b, &
+[Ctrl] + d
+```
+
+list window
+
+```
+[Ctrl] + b, w
+```
+
+## pane
+
+create vertical pane
+
+```
+[Ctrl] + b, %
+```
+
+create horizontal pane
+
+```
+[Ctrl] + b, "
+```
+
+move pane with pane number
+
+```
+[Ctrl] + b, q
+```
+
+move pane with arrow key
+
+```
+[Ctrl] +b, <arrow key>
+```
+
+terminate pane
+
+```
+[Ctrl] +d
+[Ctrl] + b, x
+```
+
+pane zoom
+
+```
+[Ctrl] +b, z
+```
+
+change pane layout
+
+```
+[Ctrl] + b, spacebar
+```

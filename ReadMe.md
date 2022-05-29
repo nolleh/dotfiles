@@ -92,9 +92,19 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
 ```
 
+## auto suggestions in command line
+
 ```bash
 git clone https://github.com/zsh-users/zsh-autosuggestions.git
 echo "source ${(q-)PWD}/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
+```
+
+## Trouble Shoots
+
+uncomment in .zshrc, if you have broken charactor issue.
+
+```bash
+export LANG=en_US.UTF-8
 ```
 
 ## tmux

@@ -36,12 +36,18 @@ change session name - `[Ctrl] + b, $`
 
 detach from session - `[Ctrl] + b, d`
 
-attach to session - `tmux attach -t <number or name>`
+attach to session - `tmux attach -t {number or name}`
 
 list tmux sessions
 
 ```
 tmux ls
+```
+
+kill tmux session
+
+```
+tmux kill-session -t {name}
 ```
 
 ## window

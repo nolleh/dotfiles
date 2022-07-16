@@ -16,6 +16,12 @@ sudo apt-get install tmux
 tmux
 ```
 
+## apply config
+
+```
+tmux source-file ~/.tmux.conf
+```
+
 # ShortCut
 
 ## Session

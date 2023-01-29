@@ -110,3 +110,10 @@ export LANG=en_US.UTF-8
 ## tmux
 
 [tmux](includes/tmux.md)
+
+
+## NvChad
+
+```zsh
+git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && nvim
+```

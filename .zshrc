@@ -1,4 +1,5 @@
 
+export WS=${HOME}/Documents/workspace
 export WS_GITHUB=${HOME}/Documents/workspace_github
 # export PYENV_ROOT="${HOME}/brew/Cellar/.pyenv"
 
@@ -114,5 +115,6 @@ export LANG=en_US.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source ${HOME}/Documents/workspace_github/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ${HOME}/Documents/workspace_github/zsh-autosuggestions/zsh-autosuggestions.zsh
+source ${WS_GITHUB}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source ${WS_GITHUB}/zsh-autosuggestions/zsh-autosuggestions.zsh
+source <(kubectl completion zsh)

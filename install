@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+cp .zshrc ~/.zshrc
+
+zsh
+
+cp -r kitty/* ~/.config/kitty/
+cp -r vim/lua-nvim/* ~/.config/nvim/lua/custom/
+

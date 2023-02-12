@@ -1,16 +1,12 @@
 
 export WS=${HOME}/Documents/workspace
 export WS_GITHUB=${HOME}/Documents/workspace_github
-# export PYENV_ROOT="${HOME}/brew/Cellar/.pyenv"
 
 # If you come from bash you might have to change your $PATH.
-#export PATH=${PYENV_ROOT}/bin:${HOME}/brew/bin:/usr/local/bin:$PATH
+export BREW=$(brew --prefix)
 
-export PYBIN=${HOME}/Library/Python/3.10/bin
-export PATH=${PYBIN}:${HOME}/brew/bin:/usr/local/bin:$PATH
+export PATH=${BREW}/bin:/usr/local/bin:$PATH
 
-# eval "$(pyenv init -)"
-#eval "$(pyenv virtualenv-init -)"
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"
 

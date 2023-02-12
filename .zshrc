@@ -4,7 +4,8 @@ export WS_GITHUB=${HOME}/Documents/workspace_github
 
 # If you come from bash you might have to change your $PATH.
 
-export PATH=${HOME}/.config/scripts/bin:/opt/brew/bin:${HOME}/brew/bin:/usr/local/bin:$PATH
+export BREW=/opt/homebrew/bin:${HOME}/brew/bin
+export PATH=${HOME}/.config/scripts/bin:${BREW}:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="${HOME}/.oh-my-zsh"

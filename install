@@ -7,3 +7,5 @@ zsh
 cp -r kitty/* ~/.config/kitty/
 cp -r vim/lua-nvim/* ~/.config/nvim/lua/custom/
 
+./scripts/install
+

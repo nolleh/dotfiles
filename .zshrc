@@ -1,14 +1,18 @@
 
-export WS=${HOME}/Documents/workspace
-export WS_GITHUB=${HOME}/Documents/workspace_github
+export WS=$HOME/Documents/workspace_git
+export WS_GITHUB=$HOME/Documents/workspace_github
 
-# If you come from bash you might have to change your $PATH.
+OPT_USER=$(ls -ld /opt/homebrew)
+if [[ $OPT_USER == *"$(whoami)"* ]]; then
+  export BREW=/opt/homebrew/bin
+else
+  export BREW=$HOME/brew/bin
+fi
 
-export BREW=/opt/homebrew/bin:${HOME}/brew/bin
-export PATH=${HOME}/.config/scripts/bin:${BREW}:/usr/local/bin:$PATH
+export PATH=$HOME/.config/scripts/bin:$BREW:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="${HOME}/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 export EDITOR="nvim"
 
@@ -111,6 +115,6 @@ export LANG=en_US.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-source ${WS_GITHUB}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source ${WS_GITHUB}/zsh-autosuggestions/zsh-autosuggestions.zsh
+source $WS_GITHUB/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
 source <(kubectl completion zsh)

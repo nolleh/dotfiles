@@ -1,11 +1,38 @@
 #!/usr/bin/env bash
 
-cp .zshrc ~/.zshrc
+main() {
+	install fzf brew
+	install wget brew
+	install grc brew
+	install yq brew
+	install jq brew
 
-# zsh
+	cp .zshrc ~/.zshrc
+	# zsh
+	cp -r kitty/* ~/.config/kitty/
+	cd ./vim && ./install
+	cd ..
+	cd ./scripts/ && ./install
+}
 
-cp -r kitty/* ~/.config/kitty/
-cp -r vim/lua-nvim/* ~/.config/nvim/lua/custom/
+install() {
+	case $2 in
+	'brew')
+		INSTALLED=$(brew list | grep "$1")
+		if [ -z "$INSTALLED" ]; then
+			brew install "$1"
+		fi
+		;;
+	'pnpm')
+		INSTALLED=$(pnpm list | grep "$1")
+		if [ -z "$INSTALLED" ]; then
+			pnpm i -g "$2"
+		fi
+		;;
+	*)
+		echo "unknown command: $2"
+		;;
+	esac
+}
 
-cd ./scripts/ && ./install
-
+main "$@"

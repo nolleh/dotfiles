@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
 main() {
-	install fzf brew
-	install wget brew
-	install grc brew
-	install yq brew
-	install jq brew
+
+  if [ "$1" == "pkg" ]; then
+    install fzf brew
+    install wget brew
+    install grc brew
+    install yq brew
+    install jq brew
+  fi
+
 
 	cp .zshrc ~/.zshrc
 	# zsh

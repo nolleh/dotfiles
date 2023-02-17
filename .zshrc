@@ -9,7 +9,8 @@ else
   export BREW=$HOME/brew/bin
 fi
 
-export PATH=$HOME/.config/scripts/bin:$BREW:/usr/local/bin:$PATH
+export SCRIPT=$HOME/.config/scripts
+export PATH=$SCRIPT/bin:$BREW:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"

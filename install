@@ -14,9 +14,9 @@ main() {
 	cp .zshrc ~/.zshrc
 	# zsh
 	cp -r kitty/* ~/.config/kitty/
-	cd ./vim && ./install
-	cd ..
-	cd ./scripts/ && ./install
+  [ -f ./vim/install ] && cd ./vim && ./install
+  cd ..
+  [ -f ./scripts/install ] && cd ./scripts/ && ./install
 }
 
 install() {

@@ -13,14 +13,15 @@ main() {
   fi
 
 
+	# zsh
 	cp .zshrc ~/.zshrc
   [ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
-	# zsh
+  cd ./colour-mysql-console && ./install "$@" && cd ..
+
 	cp -r kitty/* ~/.config/kitty/
-  [ -f ./vim/install ] && cd ./vim && ./install "$@"
-  cd ..
-  [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@"
+  [ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
+  [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 }
 
 install() {

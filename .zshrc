@@ -1,6 +1,12 @@
-
 export WS=$HOME/Documents/workspace_git
 export WS_GITHUB=$HOME/Documents/workspace_github
+
+/bin/launchctl setenv "WS" $WS
+/bin/launchctl setenv "WS_GITHUB" $WS_GITHUB
+
+if [[ -f "$HOME/.env.workspace" ]]; then
+  $HOME/.env.workspace
+fi
 
 OPT_USER=$(ls -ld /opt/homebrew)
 if [[ $OPT_USER == *"$(whoami)"* ]]; then

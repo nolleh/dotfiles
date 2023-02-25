@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-main() {
+source ./func
 
-  if [ "$1" == "pkg" ]; then
+main() {
+  opts "$@"
+  if [ $PACKAGE = true ]; then
     install fzf brew
     install wget brew
     install grc brew

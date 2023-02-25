@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+set -a
+FILE=""
+CONF=false
+PACKAGE=false
+
+opts() {
+	while (("$#")); do
+		case "$1" in
+		-f | --file)
+			if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+				FILE=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		-c | --conf)
+      CONF=true
+      shift
+			;;
+		-p | --pkg)
+			PACKAGE=true
+			shift
+			;;
+		-h | --help)
+			echo "Usage:  $0 -i <input> [options]" >&2
+			echo "        -f | --file  %  (passed file will be attached in init.lua)" >&2
+      echo "        -c | --conf  %  (similar with --file opt, but using default file (~/.config/.nvim/post-init.lua))" >&2
+			echo "        -p | --pkg      (install packages)" >&2
+			exit 0
+			;;
+		-* | --*) # unsupported flags
+			echo "Error: Unsupported flag: $1" >&2
+			echo "$0 -h for help message" >&2
+			exit 1
+			;;
+		*)
+			echo "Error: Arguments with not proper flag: $1" >&2
+			echo "$0 -h for help message" >&2
+			exit 1
+			;;
+		esac
+	done
+}
+
+export -f opts

@@ -3,25 +3,24 @@
 source ./func
 
 main() {
-  opts "$@"
-  if [ $PACKAGE = true ]; then
-    install fzf brew
-    install wget brew
-    install grc brew
-    install yq brew
-    install jq brew
-  fi
-
+	opts "$@"
+	if [ $PACKAGE = true ]; then
+		install fzf brew
+		install wget brew
+		install grc brew
+		install yq brew
+		install jq brew
+	fi
 
 	# zsh
 	cp .zshrc ~/.zshrc
-  [ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
+	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
-  cd ./colour-mysql-console && ./install "$@" && cd ..
+	cd ./colour-mysql-console && ./install "$@" && cd ..
 
 	cp -r kitty/* ~/.config/kitty/
-  [ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
-  [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
+	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
+	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 }
 
 install() {

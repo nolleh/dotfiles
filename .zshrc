@@ -5,14 +5,14 @@ export WS_GITHUB=$HOME/Documents/workspace_github
 /bin/launchctl setenv "WS_GITHUB" $WS_GITHUB
 
 if [[ -f "$HOME/.env.workspace" ]]; then
-  $HOME/.env.workspace
+	$HOME/.env.workspace
 fi
 
 OPT_USER=$(ls -ld /opt/homebrew)
 if [[ $OPT_USER == *"$(whoami)"* ]]; then
-  export BREW=/opt/homebrew/bin
+	export BREW=/opt/homebrew/bin
 else
-  export BREW=$HOME/brew/bin
+	export BREW=$HOME/brew/bin
 fi
 
 export SCRIPT=$HOME/.config/scripts
@@ -90,9 +90,9 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-  git
-  fzf
-  #zsh-autosuggestions
+	git
+	fzf
+	#zsh-autosuggestions
 )
 
 source $ZSH/oh-my-zsh.sh

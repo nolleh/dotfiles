@@ -18,8 +18,8 @@ opts() {
 			fi
 			;;
 		-c | --conf)
-      CONF=true
-      shift
+			CONF=true
+			shift
 			;;
 		-p | --pkg)
 			PACKAGE=true
@@ -28,7 +28,7 @@ opts() {
 		-h | --help)
 			echo "Usage:  $0 -i <input> [options]" >&2
 			echo "        -f | --file  %  (passed file will be attached in init.lua)" >&2
-      echo "        -c | --conf  %  (similar with --file opt, but using default file (~/.config/.nvim/post-init.lua))" >&2
+			echo "        -c | --conf  %  (similar with --file opt, but using default file (~/.config/.nvim/post-init.lua))" >&2
 			echo "        -p | --pkg      (install packages)" >&2
 			exit 0
 			;;

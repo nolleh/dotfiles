@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 
-set -a
-FILE=""
-CONF=false
-PACKAGE=false
+export FILE=""
+export CONF=false
+export PACKAGE=false
 
 opts() {
 	while (("$#")); do

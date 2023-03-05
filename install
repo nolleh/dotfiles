@@ -26,7 +26,7 @@ main() {
 install() {
 	case $2 in
 	'brew')
-		INSTALLED=$(brew list | grep "$1")
+		INSTALLED=$(brew list "$1")
 		if [ -z "$INSTALLED" ]; then
 			brew install "$1"
 		fi

@@ -10,6 +10,7 @@ main() {
 		install grc brew
 		install yq brew
 		install jq brew
+		install gh brew
 	fi
 
 	# zsh

@@ -33,7 +33,7 @@ install() {
 		fi
 		;;
 	'pnpm')
-		INSTALLED=$(pnpm -g list | grep "$1")
+		INSTALLED=$(pnpm list -g "$1")
 		if [ -z "$INSTALLED" ]; then
 			pnpm i -g "$1"
 		fi

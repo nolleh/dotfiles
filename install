@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 source ./os
 source ./func
 
@@ -24,7 +26,7 @@ main() {
 
 	cd ./colour-mysql-console && ./install "$@" && cd ..
 
-	cp -r kitty/* ~/.config/kitty/
+	[ -f ~/.config/kitty ] && cp -r kitty/* ~/.config/kitty/
 	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
 	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 }
@@ -40,9 +42,8 @@ getpkgm() {
 install() {
 	case $2 in
 	'apt')
-		INSTALLED=$(apt list "$1")
-		if [ -z "$INSTALLED" ]; then
-			apt install "$1"
+		if ! dpkg -s "$1" >/dev/null 2>&1; then
+			sudo apt-get install "$1"
 		fi
 		;;
 	'brew')

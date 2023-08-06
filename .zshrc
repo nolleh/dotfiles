@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 export WS=$HOME/Documents/workspace_git
 export WS_GITHUB=$HOME/Documents/workspace_github
 
@@ -10,7 +12,7 @@ if [[ -f "$HOME/.env.workspace" ]]; then
 	$HOME/.env.workspace
 fi
 
-if [[ -n "$(which brew)" ]]; then
+if [[ "$(which brew)" != *"not found"* ]]; then
 	OPT_USER=$(ls -ld /opt/homebrew)
 	if [[ $OPT_USER == *"$(whoami)"* ]]; then
 		export BREW=/opt/homebrew/bin
@@ -31,7 +33,12 @@ export EDITOR="nvim"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="agnoster"
+
+prompt_dir() {
+        prompt_segment 39d $CURRENT_FG '%~'
+}
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -128,4 +135,7 @@ export LANG=en_US.UTF-8
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 source $WS_GITHUB/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
-source <(kubectl completion zsh)
+
+if [[ "$(which kubectl)" != *"not found"* ]]; then
+  source <(kubectl completion zsh)
+fi

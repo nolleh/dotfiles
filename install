@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
 
+source ./os
 source ./func
+
+echo "the os is $OS"
 
 main() {
 	opts "$@"
 	if [ $PACKAGE = true ]; then
-		install fzf brew
-		install wget brew
-		install grc brew
-		install yq brew
-		install jq brew
-		install gh brew
+		PKGM=$(getpkgm)
+		echo "pkgm $PKGM"
+		install fzf "$PKGM"
+		install wget "$PKGM"
+		install grc "$PKGM"
+		install yq "$PKGM"
+		install jq "$PKGM"
+		install gh "$PKGM"
 	fi
 
 	# zsh
@@ -24,8 +29,22 @@ main() {
 	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 }
 
+getpkgm() {
+	case $OS in
+	'MAC') echo 'brew' ;;
+	'UBUNTU') echo 'apt' ;;
+	*) 'unknown os' ;;
+	esac
+}
+
 install() {
 	case $2 in
+	'apt')
+		INSTALLED=$(apt list "$1")
+		if [ -z "$INSTALLED" ]; then
+			apt install "$1"
+		fi
+		;;
 	'brew')
 		INSTALLED=$(brew list "$1")
 		if [ -z "$INSTALLED" ]; then

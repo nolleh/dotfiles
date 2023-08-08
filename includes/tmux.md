@@ -18,6 +18,10 @@ tmux
 
 ## apply config
 
+looks like if .conf file is not located in home directory, 
+it not applied to after reboot.
+so put it home dir.
+
 ```
 tmux source-file ~/.tmux.conf
 ```

@@ -12,7 +12,9 @@ if [[ -f "$HOME/.env.workspace" ]]; then
 	$HOME/.env.workspace
 fi
 
-if [[ "$(which brew)" != *"not found"* ]]; then
+#not avaliable (because the which command work from env path)
+#if [[ "$(which brew)" != *"not found"* ]]; then
+if [[ -n "$(which system_profiler)" ]]; then
 	OPT_USER=$(ls -ld /opt/homebrew)
 	if [[ $OPT_USER == *"$(whoami)"* ]]; then
 		export BREW=/opt/homebrew/bin
@@ -37,7 +39,7 @@ export EDITOR="nvim"
 ZSH_THEME="agnoster"
 
 prompt_dir() {
-        prompt_segment 39d $CURRENT_FG '%~'
+	prompt_segment 39d $CURRENT_FG '%~'
 }
 
 # Set list of themes to pick from when loading at random
@@ -137,5 +139,5 @@ source $WS_GITHUB/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 if [[ "$(which kubectl)" != *"not found"* ]]; then
-  source <(kubectl completion zsh)
+	source <(kubectl completion zsh)
 fi

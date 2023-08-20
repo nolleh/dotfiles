@@ -14,7 +14,10 @@ fi
 
 #not avaliable (because the which command work from env path)
 #if [[ "$(which brew)" != *"not found"* ]]; then
-if [[ -n "$(which system_profiler)" ]]; then
+
+WHICH_PROFILE=$(which system_profiler)
+
+if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 	OPT_USER=$(ls -ld /opt/homebrew)
 	if [[ $OPT_USER == *"$(whoami)"* ]]; then
 		export BREW=/opt/homebrew/bin

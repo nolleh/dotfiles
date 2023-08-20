@@ -26,6 +26,18 @@ so put it home dir.
 tmux source-file ~/.tmux.conf
 ```
 
+## tpm
+
+tmux plugin manager.
+```
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+in tmux.conf
+```bash
+run '~/.tmux/plugins/tpm/tpm'
+```
+
 # ShortCut
 
 ## Session

@@ -144,3 +144,11 @@ source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
 if [[ "$(which kubectl)" != *"not found"* ]]; then
 	source <(kubectl completion zsh)
 fi
+
+# pnpm
+export PNPM_HOME="$HOME/.local/share/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end

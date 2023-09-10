@@ -18,7 +18,8 @@ main() {
 		install yq "$PKGM"
 		install jq "$PKGM"
 		install gh "$PKGM"
-    install ripgrep "$PKGM"
+		install ripgrep "$PKGM"
+		install bat "$PKGM"
 	fi
 
 	# zsh

@@ -12,7 +12,7 @@ if [[ -f "$HOME/.env.workspace" ]]; then
 	$HOME/.env.workspace
 fi
 
-#not avaliable (because the which command work from env path)
+#not available (because the which command work from env path)
 #if [[ "$(which brew)" != *"not found"* ]]; then
 
 WHICH_PROFILE=$(which system_profiler)
@@ -27,7 +27,7 @@ if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 fi
 
 export SCRIPT=$HOME/.config/scripts
-export PATH=$SCRIPT/bin:$BREW:/usr/local/bin:$PATH
+export PATH=$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -148,7 +148,7 @@ fi
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+*":$PNPM_HOME:"*) ;;
+*) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end

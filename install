@@ -21,8 +21,8 @@ main() {
 		install ripgrep "$PKGM"
 		install bat "$PKGM"
 
-    ## langs
-    install protobuf-compiler "$PKGM"
+		## langs
+		install protobuf-compiler "$PKGM"
 	fi
 
 	# zsh

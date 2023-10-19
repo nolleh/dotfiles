@@ -119,7 +119,7 @@ echo "source ${(q-)PWD}/zsh-autosuggestions/zsh-autosuggestions.zsh" >> ${ZDOTDI
 
 ## Trouble Shoots
 
-uncomment in .zshrc, if you have broken charactor issue.
+uncomment in .zshrc, if you have broken character issue.
 
 ```bash
 export LANG=en_US.UTF-8

@@ -34,6 +34,8 @@ main() {
 	[ -f ~/.config/kitty ] && cp -r kitty/* ~/.config/kitty/
 	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
 	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
+
+	# cp -r ./alacritty ~/.config
 }
 
 getpkgm() {

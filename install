@@ -26,6 +26,7 @@ main() {
 	fi
 
 	# zsh
+	cp -r ./alacritty ~/.config
 	cp .zshrc ~/.zshrc
 	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
@@ -35,7 +36,6 @@ main() {
 	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
 	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 
-	# cp -r ./alacritty ~/.config
 }
 
 getpkgm() {

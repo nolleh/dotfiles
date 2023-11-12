@@ -21,13 +21,21 @@ main() {
 		install ripgrep "$PKGM"
 		install bat "$PKGM"
 
-		## langs
-		install protobuf-compiler "$PKGM"
+		if [ "$OS" == "MAC" ]; then
+			install protobuf "$PKGM"
+		else
+			install protobuf-compiler "$PKGM"
+		fi
+
 	fi
 
 	# zsh
-	cp -r ./alacritty ~/.config
+	# cp -r ./alacritty ~/.config
+
 	cp .zshrc ~/.zshrc
+
+	cd ./alacritty && ./install && cd ..
+
 	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
 	cd ./colour-mysql-console && ./install "$@" && cd ..

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -e
+
+source ../os
+
+cp ./alacritty.yml ~/.config/alacritty/
+if [ "$OS" == "MAC" ]; then
+	cp ./mac/fonts.yml ~/.config/alacritty/
+elif [ "$OS" == "UBUNTU" ]; then
+	cp ./ubuntu/fonts.yml ~/.config/alacritty/
+fi

@@ -10,5 +10,5 @@ if [[ -f /etc/os-release ]]; then
 elif [[ -n "$(which system_profiler)" ]]; then
 	OS="MAC"
 else
-	OS="UNNOWN"
+	OS="UNKNOWN"
 fi

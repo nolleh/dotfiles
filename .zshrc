@@ -27,7 +27,8 @@ if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 fi
 
 export SCRIPT=$HOME/.config/scripts
-export PATH=$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
+export VENV=$HOME/.local/bin
+export PATH=$VENV:$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"

@@ -135,3 +135,7 @@ export LANG=en_US.UTF-8
 ```zsh
 git clone https://github.com/NvChad/NvChad ~/.config/nvim --depth 1 && nvim
 ```
+
+### Lazy
+
+for update plugin, :Lazy and then Sync

@@ -33,6 +33,7 @@ main() {
 	# cp -r ./alacritty ~/.config
 
 	cp .zshrc ~/.zshrc
+  cp .gitconfig ~/.gitconfig
 
 	cp .tmux.conf ~/.tmux.conf
 	tmux source-file ~/.tmux.conf

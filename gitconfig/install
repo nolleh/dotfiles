@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+
+mkdir -p ~/gitconfig
+cp ./.gitconfig ~/.gitconfig
+
+cp github.gitconfig ~/gitconfig
+cp workspace.gitconfig ~/gitconfig

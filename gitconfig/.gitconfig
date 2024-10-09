@@ -1,0 +1,14 @@
+[init]
+  defaultBranch = main
+[difftool]
+  prompt = true
+[diff]
+  tool = nvimdiff
+[difftool "nvimdiff"]
+  cmd = nvim -d $LOCAL $REMOTE
+
+[includeIf "gitdir:workspace_git"]
+  path = ~/gitconfig/workspace.gitconfig
+
+[includeIf "gitdir:workspace_github"]
+  path = ~/gitconfig/github.gitconfig

@@ -1,0 +1,5 @@
+[core]
+  sshCommand = ssh -i ~/ssh/.nolleh
+[user]
+  name = nolleh
+  email = nolleh7707@gmail.com

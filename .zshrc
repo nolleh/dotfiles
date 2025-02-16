@@ -29,8 +29,8 @@ fi
 
 export SCRIPT=$HOME/.config/scripts
 export VENV=$HOME/.local/bin
-export MASON=$HOME/.local/share/nvim/mason/bin
-export PATH=$MASON:$VENV:$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
+export MASON=$HOME/.local/share/nvim/mason
+export PATH=$MASON/bin:$VENV:$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"

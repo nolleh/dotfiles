@@ -22,7 +22,6 @@ if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
   ## company device has installed brew with temporary gaining previliege
 	if [[ $OPT_USER == *"$(whoami)"* ]] || [[ $OPT_USER == *"root"* ]]; then
 		export BREW=/opt/homebrew/bin
-  elif 
 	else
 		export BREW=$HOME/brew/bin
 	fi
@@ -144,6 +143,9 @@ export LANG=en_US.UTF-8
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
+
+alias ggraph="git log --all --graph --pretty=format:'%Cgreen%ad%Creset %C(auto)%h%d %s %C(bold black)<%aN>%Creset' --date=format-local:'%Y-%m-%d %H:%M (%a)'"
+
 source $WS_GITHUB/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
 

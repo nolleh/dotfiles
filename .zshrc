@@ -19,8 +19,10 @@ WHICH_PROFILE=$(which system_profiler)
 
 if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 	OPT_USER=$(ls -ld /opt/homebrew)
-	if [[ $OPT_USER == *"$(whoami)"* ]]; then
+  ## company device has installed brew with temporary gaining previliege
+	if [[ $OPT_USER == *"$(whoami)"* ]] || [[ $OPT_USER == *"root"* ]]; then
 		export BREW=/opt/homebrew/bin
+  elif 
 	else
 		export BREW=$HOME/brew/bin
 	fi

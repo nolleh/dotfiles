@@ -43,6 +43,7 @@ export FILE=""
 export CONF=false
 export PACKAGE=false
 export NVCHAD_V3=false
+export TMUX=false
 
 opts() {
 	while (("$#")); do
@@ -68,6 +69,10 @@ opts() {
 			NVCHAD_V3=true
 			shift
 			;;
+    -t | --tmux)
+      TMUX=true
+      shift
+      ;;
 		-h | --help)
 			echo "Usage:  $0 -i <input> [options]" >&2
 			echo "        -f | --file  %  (passed file will be attached in init.lua)" >&2

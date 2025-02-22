@@ -7,7 +7,7 @@
 [difftool "nvimdiff"]
   cmd = nvim -d $LOCAL $REMOTE
 
-[includeIf "gitdir:~/Documents/workspace_git/"]
-  path = ~/gitconfig/workspace.gitconfig
-[includeIf "gitdir:~/Documents/workspace_github/"]
-  path = ~/gitconfig/github.gitconfig
+; [includeIf "gitdir:~/Documents/workspace_git/"]
+;   path = ~/gitconfig/workspace.gitconfig
+; [includeIf "gitdir:~/Documents/workspace_github/"]
+;   path = ~/gitconfig/github.gitconfig

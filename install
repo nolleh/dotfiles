@@ -13,7 +13,9 @@ main() {
     PKGM=$(getpkgm)
     echo "pkgm $PKGM"
     install zsh "$PKGM"
-    install tmux "$PKGM"
+    if [ $TMUX = true ]; then
+      install tmux "$PKGM"
+    fi
     install fzf "$PKGM"
     install wget "$PKGM"
     install grc "$PKGM"
@@ -38,23 +40,30 @@ main() {
 
   cp .zshrc ~/.zshrc
 
-  if [ ! -e ~/.tmux/plugins/tpm ]; then
-    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-    "$HOME/.tmux/plugins/tpm/tpm"
+  if [ $TMUX = true ]; then
+    echo "using tmux"
+    if [ ! -e ~/.tmux/plugins/tpm ]; then
+      git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+      "$HOME/.tmux/plugins/tpm/tpm"
+    fi
+    cp .tmux.conf ~/.tmux.conf
+    tmux source-file ~/.tmux.conf
   fi
 
-  cp .tmux.conf ~/.tmux.conf
-  tmux source-file ~/.tmux.conf
+  [ -f ~/.config/alacritty ] && cd ./alacritty && ./install && cd ..
 
-
-  cd ./alacritty && ./install && cd ..
   cd ./gitconfig && ./install && cd ..
 
   [ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
   cd ./colour-mysql-console && ./install "$@" && cd ..
 
-  [ -d ~/.config/kitty ] && cp -r ./kitty/tmux/* ~/.config/kitty/
+  echo "install kitty config.."
+  if [ -d ~/.config/kitty ]; then
+    [ $TMUX = true ] && cp -r ./kitty/tmux/* ~/.config/kitty/
+    [ $TMUX = true ] && cp -r ./kitty/default/* ~/.config/kitty/
+  fi
+
   [ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
   [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 

@@ -1,6 +1,3 @@
-[core]
-  sshCommand = ssh -i ~/.ssh/nolleh -o IdentitiesOnly=yes -F /dev/null
-
 [user]
   name = nolleh
   email = nolleh7707@gmail.com

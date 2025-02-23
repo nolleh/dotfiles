@@ -19,7 +19,7 @@ WHICH_PROFILE=$(which system_profiler)
 
 if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 	OPT_USER=$(ls -ld /opt/homebrew)
-  ## company device has installed brew with temporary gaining previliege
+	## company device has installed brew with temporary gaining previliege
 	if [[ $OPT_USER == *"$(whoami)"* ]] || [[ $OPT_USER == *"root"* ]]; then
 		export BREW=/opt/homebrew/bin
 	else
@@ -151,6 +151,10 @@ source $WS_GITHUB/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 if [[ "$(which kubectl)" != *"not found"* ]]; then
 	source <(kubectl completion zsh)
+fi
+
+if not type zellij >/dev/null 2>&1; then
+	eval "$(zellij setup --generate-auto-start zsh)"
 fi
 
 # pnpm

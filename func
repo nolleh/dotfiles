@@ -9,6 +9,7 @@ getpkgm() {
 }
 
 install() {
+	echo "install... $1"
 	case $2 in
 	'apt')
 		if ! dpkg -s "$1" >/dev/null 2>&1; then
@@ -17,8 +18,7 @@ install() {
 		fi
 		;;
 	'brew')
-		INSTALLED=$(brew list "$1")
-		if [ -z "$INSTALLED" ]; then
+		if ! type "$1" >/dev/null 2>&1; then
 			echo -e "install.. \e[1;32m $1 \e[0m"
 			brew install "$1"
 		fi
@@ -44,6 +44,7 @@ export CONF=false
 export PACKAGE=false
 export NVCHAD_V3=false
 export TMUX=false
+export ZELLIJ=false
 
 opts() {
 	while (("$#")); do
@@ -69,10 +70,14 @@ opts() {
 			NVCHAD_V3=true
 			shift
 			;;
-    -t | --tmux)
-      TMUX=true
-      shift
-      ;;
+		-t | --tmux)
+			TMUX=true
+			shift
+			;;
+		-z | --zellij)
+			ZELLIJ=true
+			shift
+			;;
 		-h | --help)
 			echo "Usage:  $0 -i <input> [options]" >&2
 			echo "        -f | --file  %  (passed file will be attached in init.lua)" >&2

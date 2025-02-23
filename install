@@ -8,102 +8,86 @@ source ./func
 echo "the os is $OS"
 
 main() {
-  opts "$@"
-  if [ $PACKAGE = true ]; then
-    PKGM=$(getpkgm)
-    echo "pkgm $PKGM"
-    install zsh "$PKGM"
-    if [ $TMUX = true ]; then
-      install tmux "$PKGM"
-    fi
-    install fzf "$PKGM"
-    install wget "$PKGM"
-    install grc "$PKGM"
-    install yq "$PKGM"
-    install jq "$PKGM"
-    install gh "$PKGM"
-    install ripgrep "$PKGM"
-    install bat "$PKGM"
+	opts "$@"
+	echo "ZELLIJ $ZELLIJ"
+	if [ $PACKAGE = true ]; then
+		PKGM=$(getpkgm)
+		echo "pkgm $PKGM"
+		install zsh "$PKGM"
+		if [ $TMUX = true ]; then
+			install tmux "$PKGM"
+		fi
+		if [ $ZELLIJ = true ]; then
+			install zellij "$PKGM"
+		fi
+		echo "zlij"
+		install fzf "$PKGM"
+		install wget "$PKGM"
+		install grc "$PKGM"
+		install yq "$PKGM"
+		install jq "$PKGM"
+		install gh "$PKGM"
+		install ripgrep "$PKGM"
+		install bat "$PKGM"
 
-    if [ "$OS" == "MAC" ]; then
-      install protobuf "$PKGM"
-    else
-      install protobuf-compiler "$PKGM"
-    fi
+		if [ "$OS" == "MAC" ]; then
+			install protobuf "$PKGM"
+		else
+			install protobuf-compiler "$PKGM"
+		fi
 
-    # oh-my-zsh
-    sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-  fi
+		# oh-my-zsh
+		if [ ! -d "$HOME"/.oh-my-zsh ]; then
+			sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+		fi
+	fi
 
-  # zsh
-  # cp -r ./alacritty ~/.config
+	# zsh
+	# cp -r ./alacritty ~/.config
 
-  cp .zshrc ~/.zshrc
+	cp .zshrc ~/.zshrc
 
-  if [ $TMUX = true ]; then
-    echo "using tmux"
-    if [ ! -e ~/.tmux/plugins/tpm ]; then
-      git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
-      "$HOME/.tmux/plugins/tpm/tpm"
-    fi
-    cp .tmux.conf ~/.tmux.conf
-    tmux source-file ~/.tmux.conf
-  fi
+	if [ $TMUX = true ]; then
+		echo "using tmux"
+		if [ ! -e ~/.tmux/plugins/tpm ]; then
+			git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+			"$HOME/.tmux/plugins/tpm/tpm"
+		fi
+		cp .tmux.conf ~/.tmux.conf
+		tmux source-file ~/.tmux.conf
+	fi
 
-  [ -f ~/.config/alacritty ] && cd ./alacritty && ./install && cd ..
+	if [ $ZELLIJ = true ]; then
+		echo "using zellij"
+		mkdir -p ~/.config/zellij
+		cp ./zellij/config.kdl ~/.config/zellij
+		if type zellij >/dev/null 2>&1; then
+			echo "config zellij"
+			zellij setup --dump-config >~/.config/zellij/config.kdl
+		fi
+	fi
 
-  cd ./gitconfig && ./install && cd ..
+	[ -f ~/.config/alacritty ] && cd ./alacritty && ./install && cd ..
 
-  [ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
+	cd ./gitconfig && ./install && cd ..
 
-  cd ./colour-mysql-console && ./install "$@" && cd ..
+	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
-  echo "install kitty config.."
-  if [ -d ~/.config/kitty ]; then
-    [ $TMUX = true ] && cp -r ./kitty/tmux/* ~/.config/kitty/
-    [ $TMUX = true ] && cp -r ./kitty/default/* ~/.config/kitty/
-  fi
+	cd ./colour-mysql-console && ./install "$@" && cd ..
 
-  [ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
-  [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
+	echo "install kitty config.."
+	if [ -d ~/.config/kitty ]; then
+		if [ $TMUX = true ] || [ $ZELLIJ = true ]; then
+			cp -r ./kitty/tmux/* ~/.config/kitty/
+		else
+			cp -r ./kitty/default/* ~/.config/kitty/
+		fi
+	fi
 
-  install python3-pip "$PKGM"
-}
+	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
+	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 
-getpkgm() {
-  case $OS in
-  'MAC') echo 'brew' ;;
-  'UBUNTU') echo 'apt' ;;
-  *) 'unknown os' ;;
-  esac
-}
-
-install() {
-  case $2 in
-  'apt')
-    if ! dpkg -s "$1" >/dev/null 2>&1; then
-      echo -e "install.. \e[1;32m $1 \e[0m"
-      sudo apt-get install "$1"
-    fi
-    ;;
-  'brew')
-    INSTALLED=$(brew list "$1")
-    if [ -z "$INSTALLED" ]; then
-      echo -e "install.. \e[1;32m $1 \e[0m"
-      brew install "$1"
-    fi
-    ;;
-  'pnpm')
-    INSTALLED=$(pnpm list -g "$1")
-    if [ -z "$INSTALLED" ]; then
-      echo -e "install.. \e[1;32m $1 \e[0m"
-      pnpm i -g "$1"
-    fi
-    ;;
-  *)
-    echo "unknown command: $2"
-    ;;
-  esac
+	install python3-pip "$PKGM"
 }
 
 main "$@"

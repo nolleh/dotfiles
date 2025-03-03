@@ -42,9 +42,10 @@ export -f install
 export FILE=""
 export CONF=false
 export PACKAGE=false
-export NVCHAD_V3=false
+export NVCHAD_V3=true
 export TMUX=false
 export ZELLIJ=false
+export CUSTOM=true
 
 opts() {
 	while (("$#")); do
@@ -68,6 +69,10 @@ opts() {
 			;;
 		-v3 | --nvchad-v3)
 			NVCHAD_V3=true
+			shift
+			;;
+		-ic | --include-chad-config)
+			CUSTOM=false
 			shift
 			;;
 		-t | --tmux)

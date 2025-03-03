@@ -86,9 +86,9 @@ main() {
 	fi
 
 	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
-	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
+	# [ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
 
-	install python3-pip "$PKGM"
+	# install python3-pip "$PKGM"
 }
 
 main "$@"

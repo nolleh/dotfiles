@@ -27,13 +27,19 @@ main() {
 		install yq "$PKGM"
 		install jq "$PKGM"
 		install gh "$PKGM"
-		install ripgrep "$PKGM"
+		if ! type rg >/dev/null 2>&1; then
+			install ripgrep "$PKGM"
+		fi
 		install bat "$PKGM"
 
 		if [ "$OS" == "MAC" ]; then
-			install protobuf "$PKGM"
+			if ! type protoc >/dev/null 2>&1; then
+				install protobuf "$PKGM"
+			fi
 		else
-			install protobuf-compiler "$PKGM"
+			if ! dpkg -s protoc >/dev/null 2>&1; then
+				install protobuf-compiler "$PKGM"
+			fi
 		fi
 
 		# oh-my-zsh
@@ -60,7 +66,9 @@ main() {
 			fi
 		fi
 
-		curl https://pyenv.run | zsh
+		if ! type pyenv >/dev/null 2>&1; then
+			curl https://pyenv.run | zsh
+		fi
 	fi
 
 	# zsh

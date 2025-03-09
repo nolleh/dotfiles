@@ -175,4 +175,14 @@ export PYENV_ROOT="$HOME/.pyenv"
 eval "$(pyenv init - zsh)"
 #
 # eval "$(pyenv virtualenv-init -)"
+
+export ORACLE_HOME=$HOME/oracle/instantclient_23_3
+export TNS_ADMIN=$ORACLE_HOME/tns-admin
+
+# => If you wish to uninstall them at a later point (or re-install tehm under your
+# => `nvm` node installs), you can remove them from the system Node as follows:
+#
+#   $ nvm use system
+#   $ npm uninstall -g module
+
 set -o vi

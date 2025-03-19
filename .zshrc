@@ -1,7 +1,6 @@
 #!/usr/bin/env zsh
 
-export WS=$HOME/Documents/workspace_git
-export WS_GITHUB=$HOME/Documents/workspace_github
+export WS=$HOME/Documents/workspace_git export WS_GITHUB=$HOME/Documents/workspace_github
 
 if [[ -f /bin/launchctl ]]; then
 	/bin/launchctl setenv "WS" $WS
@@ -26,6 +25,8 @@ if [[ -n "$WHICH_PROFILE" && $WHICH_PROFILE != *"not found"* ]]; then
 		export BREW=$HOME/brew/bin
 	fi
 fi
+
+export $(cat $HOME/.env | xargs)
 
 export SCRIPT=$HOME/.config/scripts
 export VENV=$HOME/.local/bin
@@ -157,6 +158,10 @@ if not type zellij >/dev/null 2>&1; then
 	eval "$(zellij setup --generate-auto-start zsh)"
 fi
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
 # pnpm
 export PNPM_HOME="$HOME/.local/share/pnpm"
 case ":$PATH:" in
@@ -170,10 +175,6 @@ export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 eval "$(pyenv init - zsh)"
 
-export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $YENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - zsh)"
-#
 # eval "$(pyenv virtualenv-init -)"
 
 export ORACLE_HOME=$HOME/oracle/instantclient_23_3

@@ -5,14 +5,14 @@ set -e
 source ./os
 source ./func
 
-echo "the os is $OS"
+echo "$(tput setaf 2)the os is $OS$(tput sgr0)"
 
 main() {
 	opts "$@"
-	echo "ZELLIJ $ZELLIJ"
+	echo "$(tput setaf 2)ZELLIJ $ZELLIJ$(tput sgr0)"
 	if [ $PACKAGE = true ]; then
 		PKGM=$(getpkgm)
-		echo "pkgm $PKGM"
+		echo "$(tput setaf 2)pkgm $PKGM$(tput sgr0)"
 		install zsh "$PKGM"
 		if [ $TMUX = true ]; then
 			install tmux "$PKGM"
@@ -20,7 +20,7 @@ main() {
 		if [ $ZELLIJ = true ]; then
 			install zellij "$PKGM"
 		fi
-		echo "zlij"
+		echo "$(tput setaf 2)zelij$(tput sgr0)"
 		install fzf "$PKGM"
 		install wget "$PKGM"
 		install grc "$PKGM"
@@ -47,7 +47,7 @@ main() {
 			sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 		fi
 		if [ $TMUX = true ]; then
-			echo "using tmux"
+			echo "$(tput setaf 2)using tmux$(tput sgr0)"
 			if [ ! -e ~/.tmux/plugins/tpm ]; then
 				git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 				"$HOME/.tmux/plugins/tpm/tpm"
@@ -57,11 +57,11 @@ main() {
 		fi
 
 		if [ $ZELLIJ = true ]; then
-			echo "using zellij"
+			echo "$(tput setaf 2)using zellij$(tput sgr0)"
 			mkdir -p ~/.config/zellij
 			cp ./zellij/config.kdl ~/.config/zellij
 			if type zellij >/dev/null 2>&1; then
-				echo "config zellij"
+				echo "$(tput setaf 2)config zellij$(tput sgr0)"
 				zellij setup --dump-config >~/.config/zellij/config.kdl
 			fi
 		fi
@@ -76,15 +76,32 @@ main() {
 
 	cp .zshrc ~/.zshrc
 
-	[ -f ~/.config/alacritty ] && cd ./alacritty && ./install && cd ..
+	spinner() {
+		local pid=$!
+		local delay=0.1
+		local spinstr='|/-\'
+		while [ "$(ps a | awk '{print $1}' | grep $pid)" ]; do
+			local temp=${spinstr#?}
+			printf " [%c]  " "$spinstr"
+			local spinstr=$temp${spinstr%"$temp"}
+			sleep $delay
+			printf "\b\b\b\b\b\b"
+		done
+		printf "    \b\b\b\b"
+	}
 
-	cd ./gitconfig && ./install && cd ..
+	[ -f ~/.config/alacritty ] && echo "$(tput setaf 2)Running alacritty install script$(tput sgr0)" && (cd ./alacritty && ./install) &
+	spinner
+
+	echo "$(tput setaf 2)Running gitconfig install script$(tput sgr0)" && (cd ./gitconfig && ./install) &
+	spinner
 
 	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
-	cd ./colour-mysql-console && ./install "$@" && cd ..
+	echo "$(tput setaf 2)Running colour-mysql-console install script$(tput sgr0)" && (cd ./colour-mysql-console && ./install "$@") &
+	spinner
 
-	echo "install kitty config.."
+	echo "$(tput setaf 2)install kitty config..$(tput sgr0)"
 	if [ -d ~/.config/kitty ]; then
 		if [ $TMUX = true ] || [ $ZELLIJ = true ]; then
 			cp -r ./kitty/tmux/* ~/.config/kitty/
@@ -93,8 +110,8 @@ main() {
 		fi
 	fi
 
-	[ -f ./vim/install ] && cd ./vim && ./install "$@" && cd ..
-	[ -f ./scripts/install ] && cd ./scripts/ && ./install "$@" && cd ..
+	[ -f ./vim/install ] && echo "$(tput setaf 2)Running vim install script$(tput sgr0)" && cd ./vim && ./install "$@" && cd ..
+	[ -f ./scripts/install ] && echo "$(tput setaf 2)Running scripts install script$(tput sgr0)" && cd ./scripts/ && ./install "$@" && cd ..
 
 	# install python3-pip "$PKGM"
 }

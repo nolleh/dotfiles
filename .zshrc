@@ -187,4 +187,15 @@ export TNS_ADMIN=$ORACLE_HOME/tns-admin
 #   $ nvm use system
 #   $ npm uninstall -g module
 
+lg() {
+	export LAZYGIT_NEW_DIR_FILE=~/.lazygit/newdir
+
+	lazygit "$@"
+
+	if [ -f $LAZYGIT_NEW_DIR_FILE ]; then
+		cd "$(cat $LAZYGIT_NEW_DIR_FILE)"
+		rm -f $LAZYGIT_NEW_DIR_FILE >/dev/null
+	fi
+}
+
 set -o vi

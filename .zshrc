@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-export WS=$HOME/Documents/workspace_github
+export WS=$HOME/Documents/workspace_git
 export WS_GITHUB=$HOME/Documents/workspace_github
 
 if [[ -f /bin/launchctl ]]; then

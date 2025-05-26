@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+USER=$1
+echo "Connecting as $USER"
+ssh -o IdentitiesOnly=yes -i ~/.ssh/"$USER.pub" -F /dev/null

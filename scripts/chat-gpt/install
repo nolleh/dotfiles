@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+./gen
+
+INSTALL_PATH="$HOME"/.config/scripts/bin/
+mkdir -p "$INSTALL_PATH"
+
+ln -sf "$(pwd)"/dist/cgpt "$INSTALL_PATH"
+
+#shellcheck disable=SC2002
+ENV_FILE_GREP=$(cat "$HOME"/.env | grep OPENAI_API_KEY)
+
+[ -z "$OPENAI_API_KEY" ] && [ -z "$ENV_FILE_GREP" ] && cat .env >>"$HOME"/.env

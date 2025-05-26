@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo "install scripts"
+mkdir -p ~/.config/scripts/bin
+
+# cd chat-gpt && ./install && cd ..

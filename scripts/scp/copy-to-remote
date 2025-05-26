@@ -1,0 +1,51 @@
+#!/usr/bin/env sh
+USER=""
+HOST=""
+SOURCE=""
+DIST=""
+
+opts() {
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+		-u | --user)
+			if [ -n "$2" ] && [ "$(printf '%s' "$2" | cut -c1)" != "-" ]; then
+				USER=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		-h | --host)
+			if [ -n "$2" ] && [ "$(printf '%s' "$2" | cut -c1)" != "-" ]; then
+				HOST=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		-s | --source)
+			if [ -n "$2" ] && [ "$(printf '%s' "$2" | cut -c1)" != "-" ]; then
+				SOURCE=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		-d | --destination)
+			if [ -n "$2" ] && [ "$(printf '%s' "$2" | cut -c1)" != "-" ]; then
+				DIST=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		esac
+	done
+}
+
+opts "$@"
+scp "$SOURCE" "$USER"@"$HOST":"$DIST"

@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+CYTHONE=$(which cython)
+if [[ "$CYTHONE" == *"not found"* ]]; then
+	echo "not buildable environment. make sure install cython"
+	exit 0
+fi
+
+echo "build cgpt"
+
+rm -rf dist/*
+
+mkdir -p dist
+cd dist
+
+[ -z "$VIRTUAL_ENV" ] && PYTHON_PATH=python3 || PYTHON_PATH="$VIRTUAL_ENV"/bin/python
+cython ../q.py -o ./q.c --embed
+
+# [ -z "$VIRTUAL_ENV" ] && CONFIG_PATH=python3-config || CONFIG_PATH="$VENV"/bin
+CONFIG_PATH=python3-config
+
+echo "python3:(" "$PYTHON_PATH" "), python3-config: (" "$CONFIG_PATH" ")"
+PYTHONLIBVER=python$($PYTHON_PATH -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')$("$CONFIG_PATH" --abiflags)
+gcc -Os $($CONFIG_PATH --includes) q.c -o cgpt $($CONFIG_PATH --ldflags) -l$PYTHONLIBVER
+
+# gcc -Os q.c -o chat-gpt -l"$PYTHONLIBVER"

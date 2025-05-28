@@ -1,0 +1,4 @@
+*.swp
+**/.netrwhist
+post-init.lua
+**/sqlsnap.lua

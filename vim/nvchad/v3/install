@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+set -e
+
+source ../../os
+source ../../func
+echo "the os is $OS"
+
+if [ ! -e "$HOME/.config/nvim" ]; then
+	echo "no nvim"
+	exit 0
+fi
+
+INSTALL_PATH="$HOME/.config/nvim/"
+[[ "$CUSTOM" == "true" ]] && SUBTREE="" || SUBTREE="/lua/custom/"
+INSTALL_PATH+=$SUBTREE
+
+mkdir -p "$INSTALL_PATH"
+
+main() {
+	opts "$@"
+
+	cp mcp.json "$HOME"
+
+	rm -rf "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+	ln -s "$HOME/mcp.json" "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+
+	rm -rf "$HOME/.cursor/mcp.json"
+	ln -s "$HOME/mcp.json" "$HOME/.cursor/mcp.json"
+
+	echo "nvchad/v3 install path from: ./$SUBTREE/* to: $INSTALL_PATH"
+	cp -r ./$SUBTREE/* "$INSTALL_PATH"
+
+	if [ $PACKAGE = true ]; then
+		PKGM=$(getpkgm)
+		echo "install package for nvim configuration"
+		# node
+		# install nodejs "$PKGM"
+
+		# nvm download and install
+		curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+		# Node.js
+		nvm install 22
+
+		# install npm "$PKGM"
+		install delve "$PKGM"
+		# pnpm
+		PNPM=$(which pnpm)
+
+		if [ -z "$PNPM" ]; then
+			echo "install pnpm"
+			curl -fsSL https://get.pnpm.io/install.sh | sh -
+			#npm --global add pnpm
+		fi
+		# plugin
+		install libmagickwand-dev "$PKGM"
+		pnpm add -g @mermaid-js/mermaid-cli
+	fi
+}
+
+main "$@"

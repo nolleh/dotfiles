@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "vertica": {
+      "command": "uvx",
+      "args": [
+        "mcp-vertica",
+        "--host=localhost",
+        "--db-port=5433",
+        "--database=VMart",
+        "--user=dbadmin",
+        "--password=",
+        "--connection-limit=10"
+      ]
+    }
+  }
+}

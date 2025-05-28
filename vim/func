@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+
+getpkgm() {
+	case $OS in
+	'MAC') echo 'brew' ;;
+	'UBUNTU') echo 'apt' ;;
+	*) 'unknown os' ;;
+	esac
+}
+
+install() {
+	case $2 in
+	'apt')
+		if ! dpkg -s "$1" >/dev/null 2>&1; then
+			echo -e "install.. \e[1;32m $1 \e[0m"
+			sudo apt-get install "$1"
+		fi
+		;;
+	'brew')
+		INSTALLED=! type "$1" >/dev/null 2>&1
+		echo "$INSTALLED"
+		if [ -z "$INSTALLED" ]; then
+			echo -e "install.. \e[1;32m $1 \e[0m"
+			brew install "$1"
+		fi
+		;;
+	'pnpm')
+		INSTALLED=$(pnpm list -g "$1")
+		if [ -z "$INSTALLED" ]; then
+			echo -e "install.. \e[1;32m $1 \e[0m"
+			pnpm i -g "$1"
+		fi
+		;;
+	*)
+		echo "unknown command: $2"
+		;;
+	esac
+}
+
+export -f getpkgm
+export -f install
+
+export FILE=""
+export CONF=false
+export PACKAGE=false
+export NVCHAD_V3=true
+export TMUX=false
+export ZELLIJ=false
+export CUSTOM=true
+
+opts() {
+	while (("$#")); do
+		case "$1" in
+		-f | --file)
+			if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+				FILE=$2
+				shift 2
+			else
+				echo "Error: Argument for $1 is missing" >&2
+				exit 1
+			fi
+			;;
+		-c | --conf)
+			CONF=true
+			shift
+			;;
+		-p | --pkg)
+			PACKAGE=true
+			shift
+			;;
+		-ic | --include-chad-config)
+			CUSTOM=false
+			shift
+			;;
+		-t | --tmux)
+			TMUX=true
+			shift
+			;;
+		-z | --zellij)
+			ZELLIJ=true
+			shift
+			;;
+		-h | --help)
+			echo "Usage:  $0 -i <input> [options]" >&2
+			echo "        -f | --file  %  (passed file will be attached in init.lua)" >&2
+			echo "        -c | --conf  %  (similar with --file opt, but using default file (~/.config/.nvim/post-init.lua))" >&2
+			echo "        -p | --pkg      (install packages)" >&2
+			exit 0
+			;;
+		-* | --*) # unsupported flags
+			echo "Error: Unsupported flag: $1" >&2
+			echo "$0 -h for help message" >&2
+			exit 1
+			;;
+		*)
+			echo "Error: Arguments with not proper flag: $1" >&2
+			echo "$0 -h for help message" >&2
+			exit 1
+			;;
+		esac
+	done
+}
+
+export -f opts

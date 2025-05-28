@@ -1,0 +1,89 @@
+let mapleader=" "
+
+set cb+=unnamed
+set nu
+set relativenumber
+
+" highlight matches with the last search pattern
+set hls
+
+" lines to scroll with CTRL-U and CTRL-D
+set scr=10
+
+"show (partial) command in status line
+set sc
+
+"information to remember after restart
+set vi='100,<1000,s100,h
+
+"mappings
+noremap J 5j
+noremap K 5k
+
+nnoremap H ^
+nnoremap L $
+vnoremap H ^
+vnoremap L $
+
+
+" easy system clipboard copy/paste
+" noremap y "*y
+" noremap Y "*Y
+" noremap p "*p
+" noremap P "*P
+
+nmap ]e <action>(GotoNextError)
+nmap [e <action>(GotoPreviousError)
+
+nmap gr <action>(GotoReference)
+nmap gi <action>(GotoImplementation)
+
+nmap gs :sp<CR><action>(GotoDefinition)
+nmap gv :vsp<CR><action>(GotoDefinition)
+
+map <leader>o <action>(FileStructurePopup)
+
+" bookmark in whole program
+nmap ma <action>(ToggleBookmark)
+
+
+map <C-N> :NERDTreeToggle<CR>
+" map <C-T> :tabnew<CR>
+" map <C-N> :tabnext<CR>
+" map <C-P> :tabprevious<CR>
+" map <C-W> :tabclose<CR>
+
+" change tab
+nmap tn <action>(NextTab)
+nmap tp <action>(PreviousTab)
+nmap <leader>x <action>(CloseEditor)
+
+map <leader>.z <action>(MaximizeEditorInSplit)
+
+nmap <leader>ff <action>(GotoFile)
+map <leader>bf <action>(RecentFiles)
+map <leader>rn <action>(RenameElement)
+
+" "nmap <leader>ft <action>(FindInPath)
+nmap <leader>fc <action>(GotoAction)
+nmap <leader>fm <action>(ReformatCode) \| <action>(OptimizeImports)
+" nmap <leader>fb <action>(ShowBookmarks)
+"nmap <leader>wo <action>(Un splitAll) \| <action>(HideAllWindows)
+
+imap jk <ESC>
+nmap <leader>/ <action>(CommentByLineComment)
+vmap <leader>/ <action>(CommentByLineComment)
+
+nmap ,a <action>(GotoAction)
+vmap ,a <action>(GotoAction)
+
+nmap <leader>td <action>(ActivateTODOToolWindow)
+nmap <leader>e <action>(ActivateProjectToolWindow)
+
+Plug 'preservim/nerdtree'
+set NERDTree
+" NERDTree
+let g:NERDTreeMapJumpParent="h"
+let g:NERDTreeMapJumpRoot="H"
+let g:NERDTreeMapActivateNode="l"
+let g:NERDTreeMapPreview="L"

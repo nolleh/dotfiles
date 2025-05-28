@@ -1,0 +1,64 @@
+" Syntax Highlighting
+if has("syntax")
+    syntax on
+endif
+
+"colorscheme jellybeans
+
+set backspace=indent,eol,start  " more powerful backspacing
+set autoindent
+set cindent
+
+set nu
+
+set ts=2 " Tab width
+set shiftwidth=2 " indentations width when automatically occurred
+set expandtab " Expand TABs to spaces
+
+set laststatus=2 " show status bar
+set statusline=\ %<%l:%v\ [%P]%=%a\ %h%m%r\ %F\
+
+set autoread " if file was modified from extetern, read automatically
+
+set re=0 " Use new regular expression engine
+set previewheight=20
+
+" to make sure spacebar doesn't have any mapping beforehand
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+
+setlocal cursorline
+" set noequalalways
+set nocompatible
+filetype plugin on
+set encoding=UTF-8
+set foldmethod=syntax
+" set foldmethod=indent
+
+augroup ProjectDrawer
+  autocmd!
+  " autocmd VimEnter * :Vexplore
+  autocmd VimEnter * :Lex
+  autocmd VimEnter * call LexResize()
+  autocmd VimEnter * wincmd l
+augroup END
+
+function! LexResize()
+  wincmd t
+  :vertical resize35
+  wincmd p
+endfunction
+
+" Zoom / Restore window.
+function! s:ZoomToggle() abort
+  if exists('t:zoomed') && t:zoomed
+    let t:zoomed = 0
+    tabclose
+  else
+    tabedit %
+    let t:zoomed = 1
+  endif
+endfunction
+command! ZoomToggle call s:ZoomToggle()
+
+nnoremap <silent> <leader>.z :ZoomToggle<CR>

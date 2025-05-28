@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -e
+
+[ -f ./os ] && source ./os
+[ -f ./func ] && source ./func
+opts "$@"
+
+echo "install nvim-config chadv3: $NVCHAD_V3"
+if [ $NVCHAD_V3 == true ]; then
+	cd ./nvchad/v3 && ./install "$@" && cd -
+else
+	cd ./lua-nvim && ./install "$@" && cd -
+fi
+echo "done: install nvim-config"
+
+echo "install vimrc, from $PWD"
+
+cp -r ./vim/.vim ~/
+
+case "$OS" in
+"MAC")
+	echo "found as MacOS, cp .vim rc files.."
+	cp ./vim/.vimrc ~
+	;;
+"UBUNTU")
+	echo "found as ubuntu. cp ubuntu rc files.."
+	if [ -f ./vim/.vimrc-ubuntu ]; then
+		cp ./vim/.vimrc-ubuntu ~/.vimrc
+	fi
+	;;
+**)
+	echo "unknown os"
+	;;
+esac
+
+if [ $PACKAGE = true ]; then
+	PKGM=$(getpkgm)
+	echo "pkgm $PKGM"
+	if [ "$OS" == "UBUNTU" ]; then
+		install exuberant-ctags "$PKGM"
+	elif [ "$OS" == "MAC" ]; then
+		install ctags "$PKGM"
+	fi
+fi
+
+echo "done:install vimrc"

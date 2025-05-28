@@ -1,3 +1,13 @@
+# Overview
+
+My dotfile.
+For now, actively used Kitty + NvchadV3
+
+Kitty for Performance + Image Cat + Cursor Trail
+
+Following instruction is referencible memo for configuring my environment for starting up trouble shoot (Not up-to-dated)
+
+---
 # user set
 
 ## Linux

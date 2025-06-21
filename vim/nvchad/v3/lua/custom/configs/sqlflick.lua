@@ -25,6 +25,11 @@ M = {
       host = "localhost",
       port = 6379,
     },
+    {
+      name = "local_sqlite",
+      type = "sqlite",
+      database = "test.db"
+    },
   },
 }
 return M

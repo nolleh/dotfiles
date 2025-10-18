@@ -22,14 +22,25 @@ main() {
 
 	cp mcp.json "$HOME"
 
-	rm -rf "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
-	ln -s "$HOME/mcp.json" "$HOME/Library/Application Support/Claude/claude_desktop_config.json"
+	CLUADE="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 
-	rm -rf "$HOME/.cursor/mcp.json"
-	ln -s "$HOME/mcp.json" "$HOME/.cursor/mcp.json"
+	if [[ -L $CLUADE ]]; then
+		rm -rf "$CLUADE"
+		ln -s "$HOME/mcp.json" "$CLUADE"
+	fi
+
+	CURSOR="$HOME/.cursor/mcp.json"
+	if [[ -L $CURSOR ]]; then
+		rm -rf "$CURSOR"
+		ln -s "$HOME/mcp.json" "$CURSOR"
+	fi
 
 	echo "nvchad/v3 install path from: ./$SUBTREE/* to: $INSTALL_PATH"
-	cp -r ./$SUBTREE/* "$INSTALL_PATH"
+	if [ -z "$SUBTREE" ]; then
+		cp -r ./* "$INSTALL_PATH"
+	else
+		cp -r "./$SUBTREE/"* "$INSTALL_PATH"
+	fi
 
 	if [ $PACKAGE = true ]; then
 		PKGM=$(getpkgm)

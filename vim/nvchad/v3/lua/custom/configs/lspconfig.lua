@@ -1,6 +1,6 @@
 require("nvchad.configs.lspconfig").defaults()
 local nvlsp = require("nvchad.configs.lspconfig")
-local lspconfig = require("lspconfig")
+-- local lspconfig = require("lspconfig")
 -- local capabilities = vim.lsp.protocol.make_client_capabilities()
 -- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
@@ -45,7 +45,7 @@ local function get_python_path(workspace)
 end
 
 for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup({
+  vim.lsp.config(lsp, {
     before_init = function(_, config)
       if lsp == "pyright" then
         config.settings.python.pythonPath = get_python_path(config.root_dir)
@@ -63,7 +63,7 @@ for _, lsp in ipairs(servers) do
 end
 
 local mason = require("custom.utils").runsys("echo $MASON")
-lspconfig.omnisharp.setup({
+vim.lsp.config("omnisharp", {
   cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll" },
   settings = require("custom.configs.omnisharp").config,
 })

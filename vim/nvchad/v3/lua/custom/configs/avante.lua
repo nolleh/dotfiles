@@ -6,7 +6,7 @@ require("avante").setup({
   providers = {
     claude = {
       endpoint = "https://api.anthropic.com",
-      model = "claude-3-5-sonnet-20241022",
+      model = "claude-haiku-4-5-20251001",
       extra_request_body = {
         temperature = 0,
         max_tokens = 4096,

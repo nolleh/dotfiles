@@ -1,8 +1,5 @@
 require("nvchad.configs.lspconfig").defaults()
 local nvlsp = require("nvchad.configs.lspconfig")
--- local lspconfig = require("lspconfig")
--- local capabilities = vim.lsp.protocol.make_client_capabilities()
--- capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 -- server_configurations
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
@@ -20,6 +17,7 @@ local servers = {
   "kotlin_language_server",
   "jsonls",
   "tailwindcss",
+  "omnisharp"
 }
 
 local util = require("lspconfig/util")
@@ -42,43 +40,38 @@ local function get_python_path(workspace)
   end
 
   -- Fallback to system Python.
-  -- return exepath("python3") or exepath("python") or "python"
   return "python3"
 end
 
 for _, lsp in ipairs(servers) do
-  -- lspconfig[lsp].setup({
-  --   before_init = function(_, config)
-  --     if lsp == "pyright" then
-  --       config.settings.python.pythonPath = get_python_path(config.root_dir)
-  --     end
-  --     if lsp == "ccls" then
-  --       config = require("custom.configs.ccls").config
-  --     end
-  --     if lsp == "omnisharp" then
-  --     end
-  --   end,
-  --   on_attach = nvlsp.on_attach,
-  --   on_init = nvlsp.on_init,
-  --   capabilities = nvlsp.capabilities,
-  -- })
-  --
+  local config = {
+    on_attach = nvlsp.on_attach,
+    on_init = nvlsp.on_init,
+    capabilities = nvlsp.capabilities,
+  }
+
   if lsp == "pyright" then
-    local config = vim.lsp.config[lsp]
-    config.settings.pythonPath = get_python_path(config.root_dir)
+    config.settings = {
+      python = {
+        pythonPath = get_python_path(vim.fn.getcwd()),
+      },
+    }
+  elseif lsp == "ccls" then
+    local ccls_config = require("custom.configs.ccls").config
+    -- config = vim.tbl_deep_extend("force", config, ccls_config.server or {})
+    -- if ccls_config.disable_capabilities then
+    --   config.disable_capabilities = ccls_config.disable_capabilities
+    -- end
+    -- if ccls_config.disable_signature then
+    --   config.disable_signature = ccls_config.disable_signature
+    -- end
+    config.settings = ccls_config
+  elseif lsp == "omnisharp" then
+    local mason = require("custom.utils").runsys("echo $MASON")
+    config.cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll", "--languageserver" }
+    config.settings = require("custom.configs.omnisharp").config
   end
-  if lsp == "ccls" then
-    vim.lsp.config(lsp, { require("custom.configs.ccls").config })
-  end
+
+  vim.lsp.config(lsp, config)
   vim.lsp.enable(lsp)
 end
-
-local mason = require("custom.utils").runsys("echo $MASON")
-vim.lsp.config("omnisharp", {
-  cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll" },
-  settings = require("custom.configs.omnisharp").config,
-})
-
--- for _, group in ipairs(vim.fn.getcompletion("@lsp", "highlight")) do
---     vim.api.nvim_set_hl(0, group, {})
--- end

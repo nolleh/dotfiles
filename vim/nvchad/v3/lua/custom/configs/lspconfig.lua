@@ -17,7 +17,7 @@ local servers = {
   "kotlin_language_server",
   "jsonls",
   "tailwindcss",
-  "omnisharp"
+  "omnisharp",
 }
 
 local util = require("lspconfig/util")
@@ -70,6 +70,30 @@ for _, lsp in ipairs(servers) do
     local mason = require("custom.utils").runsys("echo $MASON")
     config.cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll", "--languageserver" }
     config.settings = require("custom.configs.omnisharp").config
+    config.on_attach = function(client, bufnr)
+      nvlsp.on_attach(client, bufnr)
+      vim.keymap.set("n", "gd", function()
+        require("omnisharp_extended").telescope_lsp_definition()
+      end, {
+        buffer = bufnr,
+        noremap = true,
+        desc = "Go to definition (Omnisharp)",
+      })
+      vim.keymap.set("n", "gr", function()
+        require("omnisharp_extended").telescope_lsp_definition()
+      end, {
+        buffer = bufnr,
+        noremap = true,
+        desc = "Go to referencies (OmniSharp)",
+      })
+      vim.keymap.set("n", "gi", function()
+        require("omnisharp_extended").telescope_lsp_definition()
+      end, {
+        buffer = bufnr,
+        noremap = true,
+        desc = "Go to implementation (OmniSharp)",
+      })
+    end
   end
 
   vim.lsp.config(lsp, config)

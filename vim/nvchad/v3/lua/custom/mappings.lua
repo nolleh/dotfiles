@@ -73,17 +73,6 @@ map(
 
 map("n", "<leader>ax", ":%bd | e# | bd# | :NvimTreeToggle<CR>", { desc = "close all buf but current" })
 
-map("n", "gr", function()
-  require("omnisharp_extended").telescope_lsp_references(
-    require("telescope.themes").get_ivy({ excludeDefinition = true })
-  )
-end, { noremap = true })
-map("n", "gd", require("omnisharp_extended").telescope_lsp_definition, { noremap = true })
-map("n", "<leader>D", function()
-  require("omnisharp_extended").telescope_lsp_references()
-end, { noremap = true })
-map("n", "gi", require("omnisharp_extended").telescope_lsp_implementation, { noremap = true })
-
 map("n", "<leader>drr", function()
   local dap = require("dap")
   if dap.session() then

@@ -4,6 +4,7 @@ local nvlsp = require("nvchad.configs.lspconfig")
 -- server_configurations
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 local servers = {
+  "lua_ls",
   "html",
   "cssls",
   "ts_ls",
@@ -23,34 +24,47 @@ local servers = {
 local util = require("lspconfig/util")
 local path = util.path
 
-local function get_python_path(workspace)
-  -- Use activated virtualenv.
-  if vim.env.VIRTUAL_ENV then
-    return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
-  end
+local function on_attach(client, bufnr)
+  nvlsp.on_attach(client, bufnr)
+  vim.keymap.set("n", "gd", function()
+    require("telescope.builtin").lsp_definition()
+  end, { buffer = bufnr, desc = "Lsp definition (Telescope)" })
+  vim.keymap.set("n", "gr", function()
+    require("telescope.builtin").lsp_references()
+  end, { buffer = bufnr, desc = "Lsp references (Telescope)" })
 
-  if workspace ~= nil then
-    -- Find and use virtualenv in workspace directory.
-    for _, pattern in ipairs({ "*", ".*" }) do
-      local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
-      if match ~= "" then
-        return path.join(path.dirname(match), "bin", "python")
-      end
-    end
-  end
-
-  -- Fallback to system Python.
-  return "python3"
+  vim.keymap.set("n", "gi", function()
+    require("telescope.builtin").lsp_implementations()
+  end, { buffer = bufnr, desc = "Lsp implemenations (Telescope)" })
 end
 
 for _, lsp in ipairs(servers) do
   local config = {
-    on_attach = nvlsp.on_attach,
+    on_attach = on_attach,
     on_init = nvlsp.on_init,
     capabilities = nvlsp.capabilities,
   }
 
   if lsp == "pyright" then
+    local function get_python_path(workspace)
+      -- Use activated virtualenv.
+      if vim.env.VIRTUAL_ENV then
+        return path.join(vim.env.VIRTUAL_ENV, "bin", "python")
+      end
+
+      if workspace ~= nil then
+        -- Find and use virtualenv in workspace directory.
+        for _, pattern in ipairs({ "*", ".*" }) do
+          local match = vim.fn.glob(path.join(workspace, pattern, "pyvenv.cfg"))
+          if match ~= "" then
+            return path.join(path.dirname(match), "bin", "python")
+          end
+        end
+      end
+
+      -- Fallback to system Python.
+      return "python3"
+    end
     config.settings = {
       python = {
         pythonPath = get_python_path(vim.fn.getcwd()),

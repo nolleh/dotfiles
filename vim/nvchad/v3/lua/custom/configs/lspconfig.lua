@@ -45,7 +45,25 @@ for _, lsp in ipairs(servers) do
     capabilities = nvlsp.capabilities,
   }
 
-  if lsp == "pyright" then
+  if lsp == "lua_ls" then
+    config.settings = {
+      Lua = {
+        -- indicate this Lua code runs in Neovim's LuaJIT environment
+        runtime = { version = "LuaJIT"},
+        -- here are the external libraries/APIs available at runtime
+        workspace = {
+          library = {
+            vim.fn.expand("$VIMRUNTIME/lua"),
+            vim.fn.stdpath("data") .. "/lazy/ui/nvchad_types",
+            vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy",
+            -- lua_ls pre-bundled type definitions, exposes libuv through vim.loop(old) and vim.uv (newer)
+            -- without this, lua_ls wouldn't understand these async I/O APIs.
+            "${3rd}/luv/library"
+          }
+        }
+      }
+    }
+  elseif lsp == "pyright" then
     local function get_python_path(workspace)
       -- Use activated virtualenv.
       if vim.env.VIRTUAL_ENV then

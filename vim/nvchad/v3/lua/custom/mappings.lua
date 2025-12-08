@@ -73,18 +73,28 @@ map(
 
 map("n", "<leader>ax", ":%bd | e# | bd# | :NvimTreeToggle<CR>", { desc = "close all buf but current" })
 
-map("n", "<leader>lp", function()
-  require("custom.configs.omnisharp").load_prject_picker()
-end,{desc="Load OmniSharp project"})
+-- OmniSharp specific mappings - only when OmniSharp is attached
+vim.api.nvim_create_autocmd("LspAttach", {
+  callback = function(args)
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if client and client.name == "omnisharp" then
+      local bufnr = args.buf
+      local opts = { buffer = bufnr }
 
+      vim.keymap.set("n", "<leader>lp", function()
+        require("custom.configs.omnisharp").load_project_picker()
+      end, vim.tbl_extend("force", opts, { desc = "Load OmniSharp project" }))
 
-map("n", "<leader>lb", function()
-  require("custom.configs.omnisharp").go_back()
-end,{desc="Go back to previous project"})
+      vim.keymap.set("n", "<leader>lb", function()
+        require("custom.configs.omnisharp").go_back()
+      end, vim.tbl_extend("force", opts, { desc = "Go back to previous project" }))
 
-map("n", "<leader>lh", function()
-  require("custom.configs.omnisharp").history_picker()
-end,{desc="Show project history"})
+      vim.keymap.set("n", "<leader>lh", function()
+        require("custom.configs.omnisharp").history_picker()
+      end, vim.tbl_extend("force", opts, { desc = "Show project history" }))
+    end
+  end,
+})
 
 map("n", "<leader>drr", function()
   local dap = require("dap")

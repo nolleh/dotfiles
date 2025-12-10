@@ -33,13 +33,11 @@ end
 local function find_solution_or_project()
   local cwd = vim.fn.getcwd()
 
-  -- First try to find solution file
   local sln_files = vim.fn.glob(cwd .. "/*.sln", false, true)
   if #sln_files > 0 then
     return sln_files[1], "solution"
   end
 
-  -- Then try to find project file
   local csproj_files = vim.fn.glob(cwd .. "/*.csproj", false, true)
   if #csproj_files > 0 then
     return csproj_files[1], "project"
@@ -65,36 +63,37 @@ local function find_solution_or_project()
   return nil, nil
 end
 
--- Load a specific project by changing cwd and opening a .cs file
 function M.load_project(project, sln_path)
-  local project_dir = vim.fn.fnamemodify(project.path, ":h")
-  local cs_files = vim.fn.glob(project_dir .. "/**/*.cs", false, true)
-  if #cs_files > 0 then
-    local current_cwd = vim.fn.getcwd()
-    local current_sln, _ = find_solution_or_project()
+  vim.schedule(function()
+    local project_dir = vim.fn.fnamemodify(project.path, ":h")
+    local cs_files = vim.fn.glob(project_dir .. "/**/*.cs", false, true)
 
-    -- Save to history before switching
-    if current_cwd ~= project_dir then
-      if #M.project_history == 0 or M.project_history[#M.project_history].dir ~= current_cwd then
-        table.insert(M.project_history, {
-          name = vim.fn.fnamemodify(current_cwd, ":t"),
-          dir = current_cwd,
-          sln_path = current_sln,
-        })
+    if #cs_files > 0 then
+      local current_cwd = vim.fn.getcwd()
+      local current_sln, _ = find_solution_or_project()
+
+      -- Save to history before switching
+      if current_cwd ~= project_dir then
+        if #M.project_history == 0 or M.project_history[#M.project_history].dir ~= current_cwd then
+          table.insert(M.project_history, {
+            name = vim.fn.fnamemodify(current_cwd, ":t"),
+            dir = current_cwd,
+            sln_path = current_sln,
+          })
+        end
       end
+
+      vim.cmd("cd " .. vim.fn.fnameescape(project_dir))
+      vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
+
+      -- LSP will auto-attach when opening .cs file, no need to restart
+      -- vim.cmd("LspRestart")
+
+      vim.notify("Loaded project: " .. project.name .. " [cwd: " .. project_dir .. "]", vim.log.levels.INFO)
+    else
+      vim.notify("No .cs files found in: " .. project.name, vim.log.levels.WARN)
     end
-
-    -- Switch to project directory and open a .cs file
-    vim.cmd("cd " .. vim.fn.fnameescape(project_dir))
-    vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
-
-    -- Restart all LSP clients (no argument to restart all)
-    vim.cmd("LspRestart")
-
-    vim.notify("Loaded project: " .. project.name .. " [cwd: " .. project_dir .. "]", vim.log.levels.INFO)
-  else
-    vim.notify("No .cs files found in: " .. project.name, vim.log.levels.WARN)
-  end
+  end)
 end
 
 -- Go back to previous project in history
@@ -103,23 +102,26 @@ function M.go_back()
     vim.notify("No project history", vim.log.levels.WARN)
     return
   end
-  local current_cwd = vim.fn.getcwd()
-  local current_sln, _ = find_solution_or_project()
 
-  local prev = table.remove(M.project_history)
+  vim.schedule(function()
+    local current_cwd = vim.fn.getcwd()
+    local current_sln, _ = find_solution_or_project()
 
-  table.insert(M.project_history, 1, {
-    name = vim.fn.fnamemodify(current_cwd, ":t"),
-    dir = current_cwd,
-    sln_path = current_sln,
-  })
+    local prev = table.remove(M.project_history)
 
-  vim.cmd("cd " .. vim.fn.fnameescape(prev.dir))
-  local cs_files = vim.fn.glob(prev.dir .. "/**/*.cs", false, true)
-  if #cs_files > 0 then
-    vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
-  end
-  vim.notify("Back to: " .. prev.name .. " (cwd: " .. prev.dir .. ")", vim.log.levels.INFO)
+    table.insert(M.project_history, 1, {
+      name = vim.fn.fnamemodify(current_cwd, ":t"),
+      dir = current_cwd,
+      sln_path = current_sln,
+    })
+
+    vim.cmd("cd " .. vim.fn.fnameescape(prev.dir))
+    local cs_files = vim.fn.glob(prev.dir .. "/**/*.cs", false, true)
+    if #cs_files > 0 then
+      vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
+    end
+    vim.notify("Back to: " .. prev.name .. " (cwd: " .. prev.dir .. ")", vim.log.levels.INFO)
+  end)
 end
 
 -- Show project history picker
@@ -156,30 +158,32 @@ function M.history_picker()
             local selection = action_state.get_selected_entry()
             if selection then
               local entry = selection.value
-              -- Save before jumping
-              local current_cwd = vim.fn.getcwd()
-              local current_sln, _ = find_solution_or_project()
-              if current_cwd ~= entry.dir then
-                table.insert(M.project_history, {
-                  name = vim.fn.fnamemodify(current_cwd, ":t"),
-                  dir = current_cwd,
-                  sln_path = current_sln,
-                })
-              end
-              -- Remove selected entry
-              for i, h in ipairs(M.project_history) do
-                if h.dir == entry.dir then
-                  table.remove(M.project_history, i)
-                  break
+              vim.schedule(function()
+                -- Save before jumping
+                local current_cwd = vim.fn.getcwd()
+                local current_sln, _ = find_solution_or_project()
+                if current_cwd ~= entry.dir then
+                  table.insert(M.project_history, {
+                    name = vim.fn.fnamemodify(current_cwd, ":t"),
+                    dir = current_cwd,
+                    sln_path = current_sln,
+                  })
                 end
-              end
-              -- Go
-              vim.cmd("cd " .. vim.fn.fnameescape(entry.dir))
-              local cs_files = vim.fn.glob(entry.dir .. "/**/*.cs", false, true)
-              if #cs_files > 0 then
-                vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
-              end
-              vim.notify("Switched to: " .. entry.name, vim.log.levels.INFO)
+                -- Remove selected entry
+                for i, h in ipairs(M.project_history) do
+                  if h.dir == entry.dir then
+                    table.remove(M.project_history, i)
+                    break
+                  end
+                end
+                -- Go
+                vim.cmd("cd " .. vim.fn.fnameescape(entry.dir))
+                local cs_files = vim.fn.glob(entry.dir .. "/**/*.cs", false, true)
+                if #cs_files > 0 then
+                  vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
+                end
+                vim.notify("Switched to: " .. entry.name, vim.log.levels.INFO)
+              end)
             end
           end)
           return true
@@ -194,13 +198,16 @@ function M.history_picker()
     end
     vim.ui.select(items, { prompt = "Select project from history: " }, function(_, idx)
       if idx then
-        local entry = M.project_history[idx]
-        vim.cmd("cd " .. vim.fn.fnameescape(entry.dir))
-        local cs_files = vim.fn.glob(entry.dir .. "/**/*.cs", false, true)
-        if #cs_files > 0 then
-          vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
-        end
-        vim.notify("Switched to: " .. entry.name, vim.log.levels.INFO)
+        -- Run in background to avoid UI blocking
+        vim.schedule(function()
+          local entry = M.project_history[idx]
+          vim.cmd("cd " .. vim.fn.fnameescape(entry.dir))
+          local cs_files = vim.fn.glob(entry.dir .. "/**/*.cs", false, true)
+          if #cs_files > 0 then
+            vim.cmd("edit " .. vim.fn.fnameescape(cs_files[1]))
+          end
+          vim.notify("Switched to: " .. entry.name, vim.log.levels.INFO)
+        end)
       end
     end)
   end
@@ -214,72 +221,74 @@ function M.load_project_picker()
     return
   end
 
-  local projects = {}
+  vim.schedule(function()
+    local projects = {}
 
-  if file_type == "solution" then
-    -- Parse solution file to get all projects
-    projects = parse_solution(file_path)
-    if #projects == 0 then
-      vim.notify("No projects found in solution", vim.log.levels.WARN)
-      return
-    end
-  elseif file_type == "project" then
-    -- Single project file
-    local project_name = vim.fn.fnamemodify(file_path, ":t:r")
-    projects = {
-      {
-        name = project_name,
-        path = file_path,
-        rel_path = vim.fn.fnamemodify(file_path, ":t"),
-      }
-    }
-  end
-
-  local ok, telescope = pcall(require, "telescope.pickers")
-  if ok then
-    local finders = require("telescope.finders")
-    local conf = require("telescope.config").values
-    local actions = require("telescope.actions")
-    local action_state = require("telescope.actions.state")
-
-    telescope
-      .new({}, {
-        prompt_title = "Load OmniSharp Project",
-        finder = finders.new_table({
-          results = projects,
-          entry_maker = function(entry)
-            return {
-              value = entry,
-              display = entry.name .. " (" .. entry.rel_path .. ")",
-              ordinal = entry.name,
-            }
-          end,
-        }),
-        sorter = conf.generic_sorter({}),
-        attach_mappings = function(prompt_bufnr, _)
-          actions.select_default:replace(function()
-            actions.close(prompt_bufnr)
-            local selection = action_state.get_selected_entry()
-            if selection then
-              M.load_project(selection.value, file_path)
-            end
-          end)
-          return true
-        end,
-      })
-      :find()
-  else
-    -- Fallback to vim.ui.select
-    local items = {}
-    for _, p in ipairs(projects) do
-      table.insert(items, p.name)
-    end
-    vim.ui.select(items, { prompt = "Select project to load:" }, function(_, idx)
-      if idx then
-        M.load_project(projects[idx], file_path)
+    if file_type == "solution" then
+      -- Parse solution file to get all projects (can be slow for large solutions)
+      projects = parse_solution(file_path)
+      if #projects == 0 then
+        vim.notify("No projects found in solution", vim.log.levels.WARN)
+        return
       end
-    end)
-  end
+    elseif file_type == "project" then
+      -- Single project file
+      local project_name = vim.fn.fnamemodify(file_path, ":t:r")
+      projects = {
+        {
+          name = project_name,
+          path = file_path,
+          rel_path = vim.fn.fnamemodify(file_path, ":t"),
+        },
+      }
+    end
+
+    local ok, telescope = pcall(require, "telescope.pickers")
+    if ok then
+      local finders = require("telescope.finders")
+      local conf = require("telescope.config").values
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
+      telescope
+        .new({}, {
+          prompt_title = "Load OmniSharp Project",
+          finder = finders.new_table({
+            results = projects,
+            entry_maker = function(entry)
+              return {
+                value = entry,
+                display = entry.name .. " (" .. entry.rel_path .. ")",
+                ordinal = entry.name,
+              }
+            end,
+          }),
+          sorter = conf.generic_sorter({}),
+          attach_mappings = function(prompt_bufnr, _)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selection = action_state.get_selected_entry()
+              if selection then
+                M.load_project(selection.value, file_path)
+              end
+            end)
+            return true
+          end,
+        })
+        :find()
+    else
+      -- Fallback to vim.ui.select
+      local items = {}
+      for _, p in ipairs(projects) do
+        table.insert(items, p.name)
+      end
+      vim.ui.select(items, { prompt = "Select project to load:" }, function(_, idx)
+        if idx then
+          M.load_project(projects[idx], file_path)
+        end
+      end)
+    end
+  end)
 end
 
 M.config = {

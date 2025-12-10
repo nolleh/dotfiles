@@ -112,14 +112,14 @@ for _, lsp in ipairs(servers) do
         desc = "Go to definition (Omnisharp)",
       })
       vim.keymap.set("n", "gr", function()
-        require("omnisharp_extended").telescope_lsp_definition()
+        require("omnisharp_extended").telescope_lsp_references()
       end, {
         buffer = bufnr,
         noremap = true,
-        desc = "Go to referencies (OmniSharp)",
+        desc = "Go to references (OmniSharp)",
       })
       vim.keymap.set("n", "gi", function()
-        require("omnisharp_extended").telescope_lsp_definition()
+        require("omnisharp_extended").telescope_lsp_implementation()
       end, {
         buffer = bufnr,
         noremap = true,

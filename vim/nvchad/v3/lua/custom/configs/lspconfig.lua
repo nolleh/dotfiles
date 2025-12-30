@@ -27,7 +27,7 @@ local path = util.path
 local function on_attach(client, bufnr)
   nvlsp.on_attach(client, bufnr)
   vim.keymap.set("n", "gd", function()
-    require("telescope.builtin").lsp_definition()
+    require("telescope.builtin").lsp_definitions()
   end, { buffer = bufnr, desc = "Lsp definition (Telescope)" })
   vim.keymap.set("n", "gr", function()
     require("telescope.builtin").lsp_references()

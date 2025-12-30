@@ -29,6 +29,9 @@ local function on_attach(client, bufnr)
   vim.keymap.set("n", "gd", function()
     require("telescope.builtin").lsp_definitions()
   end, { buffer = bufnr, desc = "Lsp definition (Telescope)" })
+  vim.keymap.set("n", "gD", function()
+    require("telescope.builtin").lsp_type_definitions()
+  end, { buffer = bufnr, desc = "Lsp type definition (Telescope)" })
   vim.keymap.set("n", "gr", function()
     require("telescope.builtin").lsp_references()
   end, { buffer = bufnr, desc = "Lsp references (Telescope)" })
@@ -110,6 +113,13 @@ for _, lsp in ipairs(servers) do
         buffer = bufnr,
         noremap = true,
         desc = "Go to definition (Omnisharp)",
+      })
+      vim.keymap.set("n", "gD", function()
+        require("omnisharp_extended").telescope_lsp_type_definition()
+      end, {
+        buffer = bufnr,
+        noremap = true,
+        desc = "Go to type definition (Omnisharp)",
       })
       vim.keymap.set("n", "gr", function()
         require("omnisharp_extended").telescope_lsp_references()

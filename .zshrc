@@ -37,7 +37,16 @@ export PATH=$MASON/bin:$VENV:$SCRIPT/bin:$BREW:/opt/bin:/usr/local/bin:$PATH
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-export EDITOR="nvim"
+# Use nvr when inside nvim terminal, otherwise use nvim
+if [ -n "$NVIM" ]; then
+	export EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+	export VISUAL="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+	export GIT_EDITOR="nvr -cc split --remote-wait +'set bufhidden=wipe'"
+else
+	export EDITOR="nvim"
+	export VISUAL="nvim"
+	export GIT_EDITOR="nvim"
+fi
 
 source ~/.env
 
@@ -172,7 +181,7 @@ esac
 # pnpm end
 #
 
-if [[ -f "$HOME/.pyenv" ]]; then
+if [[ -d "$HOME/.pyenv" ]]; then
 	export PYENV_ROOT="$HOME/.pyenv"
 	[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
 	eval "$(pyenv init - zsh)"

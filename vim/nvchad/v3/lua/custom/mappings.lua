@@ -144,3 +144,23 @@ end, { desc = "dap hover" })
 -- map("n", "<YourKey2>", "<cmd>lua require('persistent-breakpoints.api').set_conditional_breakpoint()<cr>", opts)
 -- map("n", "<YourKey3>", "<cmd>lua require('persistent-breakpoints.api').clear_all_breakpoints()<cr>", opts)
 -- map("n", "<YourKey4>", "<cmd>lua require('persistent-breakpoints.api').set_log_point()<cr>", opts)
+
+-- Markdown checkbox toggle
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.keymap.set("n", "<leader>tt", function()
+      local line = vim.api.nvim_get_current_line()
+      local new_line
+
+      if line:match("^%s*%-%s*%[%s*%]") then
+        new_line = line:gsub("^(%s*%-%s*)%[%s*%]", "%1[x]", 1)
+      elseif line:match("^%s*%-%s*%[[xX]%]") then
+        new_line = line:gsub("^(%s*%-%s*)%[[xX]%]", "%1[ ]", 1)
+      else
+        return
+      end
+      vim.api.nvim_set_current_line(new_line)
+    end, { buffer = true, desc = "Toggle markdown checkbox" })
+  end,
+})

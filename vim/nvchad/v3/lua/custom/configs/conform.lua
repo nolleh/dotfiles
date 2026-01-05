@@ -13,9 +13,19 @@ local options = {
 
     cpp = { "clang-format" },
     go = { "gofmt" },
-    cs = { "csharpier" },
+    -- cs = { "csharpier" },
+    cs = { "dotnet_format" },
     toml = { "prettier" },
     python = { "black" },
+  },
+
+  formatters = {
+    dotnet_format = {
+      command = "dotnet",
+      args = { "format", "whitespace", "--include", "$FILENAME", "--no-restore" },
+      stdin = false,
+      timeout_ms = 30000,
+    },
   },
 }
 

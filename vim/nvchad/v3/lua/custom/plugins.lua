@@ -547,7 +547,8 @@ local plugins = {
     opts = {
       focus_after_send = true,
       terminal = {
-        split_width_percentage = 0.35
+        provider = "native",
+        split_width_percentage = 0.35,
       },
       diff_opts = {
         auto_close_on_accept = true, -- Close diff windows after accepting

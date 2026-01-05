@@ -2,31 +2,40 @@
 
 set -e
 
-[ -f ./os ] && source ./os
-[ -f ./func ] && source ./func
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Source config files from parent directory
+[ -f "$SCRIPT_DIR/../os" ] && source "$SCRIPT_DIR/../os"
+[ -f "$SCRIPT_DIR/../func" ] && source "$SCRIPT_DIR/../func"
 opts "$@"
 
 echo "install nvim-config chadv3: $NVCHAD_V3"
 if [ $NVCHAD_V3 == true ]; then
-	cd ./nvchad/v3 && ./install "$@" && cd -
+	cd "$SCRIPT_DIR/nvchad/v3" && ./install "$@" && cd -
 else
-	cd ./lua-nvim && ./install "$@" && cd -
+	cd "$SCRIPT_DIR/lua-nvim" && ./install "$@" && cd -
 fi
 echo "done: install nvim-config"
 
 echo "install vimrc, from $PWD"
 
-cp -r ./vim/.vim ~/
+# Copy .vim directory only if it exists
+if [ -d "$SCRIPT_DIR/vim/.vim" ]; then
+	cp -r "$SCRIPT_DIR/vim/.vim" ~/
+else
+	echo "Warning: $SCRIPT_DIR/vim/.vim directory not found, skipping..."
+fi
 
 case "$OS" in
 "MAC")
 	echo "found as MacOS, cp .vim rc files.."
-	cp ./vim/.vimrc ~
+	[ -f "$SCRIPT_DIR/vim/.vimrc" ] && cp "$SCRIPT_DIR/vim/.vimrc" ~
 	;;
 "UBUNTU")
 	echo "found as ubuntu. cp ubuntu rc files.."
-	if [ -f ./vim/.vimrc-ubuntu ]; then
-		cp ./vim/.vimrc-ubuntu ~/.vimrc
+	if [ -f "$SCRIPT_DIR/vim/.vimrc-ubuntu" ]; then
+		cp "$SCRIPT_DIR/vim/.vimrc-ubuntu" ~/.vimrc
 	fi
 	;;
 **)

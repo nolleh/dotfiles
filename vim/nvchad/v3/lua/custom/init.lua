@@ -191,3 +191,14 @@ vim.api.nvim_create_autocmd({ "FileType" }, {
     vim.keymap.set("n", "q", "<C-w>q", { silent = true, buffer = evt.buf })
   end,
 })
+
+-- Prevent image buffers from showing as modified
+local image_formats =
+  { "png", "jpg", "jpeg", "gif", "bmp", "webp", "tiff", "heic", "avif", "mp4", "mov", "avi", "mkv", "webm", "pdf" }
+vim.api.nvim_create_autocmd({ "BufRead", "BufEnter" }, {
+  pattern = "*." .. table.concat(image_formats, ",*."),
+  callback = function()
+    vim.bo.buftype = "nofile"
+    vim.bo.modifiable = false
+  end,
+})

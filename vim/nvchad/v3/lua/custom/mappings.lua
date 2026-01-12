@@ -73,7 +73,17 @@ map(
 --   "Git commit log with graph",
 -- },
 
-map("n", "<leader>ax", ":%bd | e# | bd# | :NvimTreeToggle<CR>", { desc = "close all buf but current" })
+-- map("n", "<leader>ax", ":%bd | e# | bd# | :NvimTreeToggle<CR>", { desc = "close all buf but current" })
+map("n", "<leader>ax", function()
+  local current = vim.fn.bufnr("%")
+  local buffers = vim.api.nvim_list_bufs()
+  for _, buf in ipairs(buffers) do
+    if buf ~= current and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype ~= "terminal" then
+      pcall(vim.api.nvim_buf_delete, buf, {})
+    end
+  end
+  vim.cmd("NvimTreeToggle")
+end, { desc = "close all buf but current" })
 
 -- OmniSharp specific mappings - only when OmniSharp is attached
 vim.api.nvim_create_autocmd("LspAttach", {

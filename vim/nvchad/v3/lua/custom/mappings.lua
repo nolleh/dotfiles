@@ -5,7 +5,7 @@ map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 local claude_term_view = nil
 
 vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave" }, {
-  pattern = "term://*cluade*",
+  pattern = "term://*claude*",
   callback = function()
     claude_term_view = vim.fn.winsaveview()
   end,

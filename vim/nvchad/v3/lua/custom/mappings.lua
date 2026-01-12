@@ -2,27 +2,6 @@ local map = vim.keymap.set
 
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
-local claude_term_view = nil
-
-vim.api.nvim_create_autocmd({ "BufLeave", "WinLeave" }, {
-  pattern = "term://*claude*",
-  callback = function()
-    claude_term_view = vim.fn.winsaveview()
-  end,
-})
-
-vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter" }, {
-  pattern = "term://*claude*",
-  callback = function()
-    vim.schedule(function()
-      vim.cmd("stopinsert")
-      if claude_term_view then
-        vim.fn.winrestview(claude_term_view)
-      end
-    end)
-  end,
-})
-
 -- declared in NvChadV2
 map("n", "<leader>cc", function()
   local bufnr = vim.api.nvim_get_current_buf()

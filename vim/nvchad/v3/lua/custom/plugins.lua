@@ -544,19 +544,7 @@ local plugins = {
   {
     "coder/claudecode.nvim",
     dependencies = { "folke/snacks.nvim" },
-    opts = {
-      focus_after_send = true,
-      terminal = {
-        provider = "native",
-        split_width_percentage = 0.35,
-      },
-      diff_opts = {
-        auto_close_on_accept = true, -- Close diff windows after accepting
-        vertical_split = true, -- Use vertical splits for diffs
-        open_in_current_tab = false, -- Don't create new tabs
-        keep_terminal_focus = false, -- If true, moves focus back to terminal after diff opens
-      },
-    },
+    opts = require("custom.configs.claudecode").opts,
     keys = {
       { "<leader>a", nil, desc = "AI/Claude Code" },
       { "<leader>ac", "<cmd>ClaudeCode<cr>", desc = "Toggle Claude" },
@@ -576,6 +564,7 @@ local plugins = {
       { "<leader>aa", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "Accept diff" },
       { "<leader>ad", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "Deny diff" },
     },
+    config = require("custom.configs.claudecode").config(),
   },
 }
 

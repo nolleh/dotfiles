@@ -322,6 +322,13 @@ local plugins = {
     event = "VeryLazy",
     opts = {
       -- add any options here
+      routes = {
+        {
+          filter = { error = true, min_height = 3 },
+          view = "split",
+          opts = { enter = true },
+        },
+      },
     },
     dependencies = {
       -- if you lazy-load any plugin below, make sure to add proper `module="..."` entries

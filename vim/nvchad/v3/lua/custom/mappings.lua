@@ -176,3 +176,177 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = true, desc = "Toggle markdown checkbox" })
   end,
 })
+
+-- TODO(@nolleh) refactor
+map("n", "gh", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local win_id = vim.api.nvim_get_current_win()
+
+  local first = vim.fn.line("w0", win_id)
+  local last = vim.fn.line("w$", win_id)
+  local lines = vim.fn.getbufline(bufnr, first, last)
+
+  local refs = {}
+  local seen = {}
+
+  local pattern_with_line = "([~%.%w/_%-][~%w%./_%-]*):(%d+)"
+  for i, line in ipairs(lines) do
+    local search_start = 1
+    while true do
+      local s, e, path, lnum = line:find(pattern_with_line, search_start)
+      if not s then
+        break
+      end
+      -- filter out timestamps like 22:35 (path is just digits)
+      if not path:match("^%d+$") and #path >= 2 then
+        local entry = path .. ":" .. lnum
+        if not seen[entry] then
+          seen[entry] = true
+          table.insert(refs, {
+            path = path,
+            line = tonumber(lnum),
+            display = entry,
+            buf_line = first + i - 1,
+            col = s - 1,
+          })
+        end
+      end
+      search_start = e + 1
+    end
+  end
+
+  local pattern_file_only = "([~%.%w/_%-][~%w%./_%-]*)"
+  for i, line in ipairs(lines) do
+    local search_start = 1
+    while true do
+      local s, e, path, lnum = line:find(pattern_file_only, search_start)
+      if not s then
+        break
+      end
+      -- Skip if followed by :number (already matched above)
+      local next_chars = line:sub(e + 1, e + 2)
+      local looks_like_path = path:match("/") or path:match("%.")
+
+      if not next_chars:match("^:%d") and not seen[path] and #path >= 2 and looks_like_path then
+        seen[path] = true
+        table.insert(refs, {
+          path = path,
+          line = 1,
+          display = path,
+          buf_line = first + i - 1,
+          col = s - 1,
+        })
+      end
+      search_start = e + 1
+    end
+  end
+
+  if #refs == 0 then
+    vim.notify("No file:line patterns found", vim.log.levels.INFO)
+    return
+  end
+
+  local function get_hint_key(idx)
+    if idx <= 26 then
+      return string.char(96 + idx)
+    else
+      local f = math.floor((idx - 1) / 26)
+      local s = ((idx - 1) % 26) + 1
+      return string.char(96 + f) .. string.char(96 + s)
+    end
+  end
+
+  vim.api.nvim_set_hl(0, "FileHintBg", { fg = "#1a1b26", bg = "#7aa2f7", bold = true })
+  vim.api.nvim_set_hl(0, "FileHintLeft", { fg = "#7aa2f7", bg = "NONE" })
+  vim.api.nvim_set_hl(0, "FileHintRight", { fg = "#7aa2f7", bg = "NONE" })
+
+  local ns = vim.api.nvim_create_namespace("file_hints")
+  vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+  local hint_map = {}
+  for idx, ref in ipairs(refs) do
+    local key = get_hint_key(idx)
+    hint_map[key] = ref
+    pcall(vim.api.nvim_buf_set_extmark, bufnr, ns, ref.buf_line - 1, ref.col, {
+      virt_text = {
+        { "", "FileHintLeft" },
+        { " " .. key .. " ", "FileHintBg" },
+        { "", "FileHintRight" },
+      },
+      virt_text_pos = "inline",
+      priority = 1000,
+    })
+  end
+
+  vim.cmd("redraw")
+  vim.api.nvim_echo({ { "Press hint key (or Esc to cancel: )", "Question" } }, false, {})
+
+  local input = ""
+  local max_len = #refs > 26 and 2 or 1
+
+  while true do
+    local ok, char = pcall(vim.fn.getcharstr)
+    if not ok or char == "\27" then -- Esc
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+      vim.api.nvim_echo({ { "" } }, false, {})
+      return
+    end
+
+    input = input .. char
+
+    if hint_map[input] then
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+      vim.api.nvim_echo({ { "" } }, false, {})
+
+      local ref = hint_map[input]
+
+      local target_win
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        local buf = vim.api.nvim_win_get_buf(win)
+        local bt = vim.bo[buf].buftype
+        local ft = vim.bo[buf].filetype
+        local cfg = vim.api.nvim_win_get_config(win)
+        if
+          (not cfg.relative or cfg.relative == "")
+          and bt ~= "terminal"
+          and bt ~= "prompt"
+          and ft ~= "neo-tree"
+          and ft ~= "NvimTree"
+          and ft ~= "oil"
+        then
+          target_win = win
+          break
+        end
+      end
+
+      local path = ref.path
+      if path:match("^~") then
+        path = path:gsub("^~", vim.fn.expand("~"))
+      elseif not path:match("^/") then
+        path = vim.fn.getcwd() .. "/" .. path
+      end
+
+      if vim.fn.filereadable(path) == 0 then
+        vim.notify("File not found: " .. path, vim.log.levels.INFO)
+        return
+      end
+
+      if target_win then
+        vim.api.nvim_win_call(target_win, function()
+          vim.cmd("edit " .. vim.fn.fnameescape(path))
+        end)
+        vim.api.nvim_set_current_win(target_win)
+      else
+        vim.cmd("edit " .. vim.fn.fnameescape(path))
+      end
+
+      vim.api.nvim_win_set_cursor(0, { ref.line, 0 })
+      vim.cmd("normal! zz")
+
+      return
+    elseif #input >= max_len then
+      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+      vim.api.nvim_echo({ { "No match for: " .. input, "ErrorMsg" } }, false, {})
+      return
+    end
+  end
+end, { desc = "File hints: inline labels" })

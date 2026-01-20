@@ -202,3 +202,50 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufEnter" }, {
     vim.bo.modifiable = false
   end,
 })
+
+-- dotnet format for C# files
+local utils = require("custom.utils")
+vim.api.nvim_create_user_command("DotnetFormat", function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local filepath = vim.api.nvim_buf_get_name(bufnr)
+  local dirname = vim.fn.fnamemodify(filepath, ":h")
+
+  vim.cmd("silent write")
+
+  local project_file, _ = utils.find_solution_or_project(dirname)
+  if not project_file then
+    vim.notify("dotnet format: project file not found", vim.log.levels.WARN)
+    return
+  end
+
+  local project_dir = vim.fn.fnamemodify(project_file, ":h")
+  local project_name = vim.fn.fnamemodify(project_file, ":t")
+  local relative_filepath = "./" .. vim.fn.fnamemodify(filepath, ":t")
+
+  local cmd = string.format(
+    "dotnet format whitespace %s --include %s --no-restore",
+    vim.fn.shellescape(project_name),
+    vim.fn.shellescape(relative_filepath)
+  )
+
+  vim.fn.jobstart(cmd, {
+    cwd = project_dir,
+    on_exit = function(_, exit_code)
+      vim.schedule(function()
+        if exit_code == 0 then
+          if vim.api.nvim_buf_is_valid(bufnr) and vim.api.nvim_get_current_buf() == bufnr then
+            local cursor = vim.api.nvim_win_get_cursor(0)
+            vim.cmd("edit!")
+            local line_count = vim.api.nvim_buf_line_count(bufnr)
+            if cursor[1] > line_count then
+              cursor[1] = line_count
+            end
+            vim.api.nvim_win_set_cursor(0, cursor)
+          end
+        else
+          vim.notify("dotnet format failed with exit code: " .. exit_code, vim.log.levels.ERROR)
+        end
+      end)
+    end,
+  })
+end, { desc = "Format C# file with dotnet format" })

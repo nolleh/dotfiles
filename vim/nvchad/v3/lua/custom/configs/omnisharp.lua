@@ -1,4 +1,5 @@
 local M = {}
+local utils = require("custom.utils")
 
 M.project_history = {}
 
@@ -28,40 +29,7 @@ local function parse_solution(sln_path)
   return projects
 end
 
--- Find solution or project file from current directory or parents
--- Returns: path, type ("solution" or "project")
-local function find_solution_or_project()
-  local cwd = vim.fn.getcwd()
-
-  local sln_files = vim.fn.glob(cwd .. "/*.sln", false, true)
-  if #sln_files > 0 then
-    return sln_files[1], "solution"
-  end
-
-  local csproj_files = vim.fn.glob(cwd .. "/*.csproj", false, true)
-  if #csproj_files > 0 then
-    return csproj_files[1], "project"
-  end
-
-  -- Search in parent directories
-  local parent = vim.fn.fnamemodify(cwd, ":h")
-  while parent ~= cwd do
-    sln_files = vim.fn.glob(parent .. "/*.sln", false, true)
-    if #sln_files > 0 then
-      return sln_files[1], "solution"
-    end
-
-    csproj_files = vim.fn.glob(parent .. "/*.csproj", false, true)
-    if #csproj_files > 0 then
-      return csproj_files[1], "project"
-    end
-
-    cwd = parent
-    parent = vim.fn.fnamemodify(cwd, ":h")
-  end
-
-  return nil, nil
-end
+local find_solution_or_project = utils.find_solution_or_project
 
 function M.load_project(project, sln_path)
   vim.schedule(function()

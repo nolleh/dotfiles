@@ -13,20 +13,15 @@ local options = {
 
     cpp = { "clang-format" },
     go = { "gofmt" },
-    -- cs = { "csharpier" },
-    cs = { "dotnet_format" },
+    -- cs: instead conform, use autocmd to use dotnet format
     toml = { "prettier" },
     python = { "black" },
   },
 
-  formatters = {
-    dotnet_format = {
-      command = "dotnet",
-      args = { "format", "whitespace", "--include", "$FILENAME", "--no-restore" },
-      stdin = false,
-      timeout_ms = 30000,
-    },
-  },
+  -- format_on_save = {
+  --   timeout_ms = 5000,
+  --   lsp_format = "fallback",
+  -- },
 }
 
 return options

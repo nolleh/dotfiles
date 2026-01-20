@@ -2,8 +2,10 @@
 
 set -e
 
-source ../../os
-source ../../func
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+[ -f "$SCRIPT_DIR/../../os" ] && source "$SCRIPT_DIR/../../os"
+[ -f "$SCRIPT_DIR/../../func" ] && source "$SCRIPT_DIR/../../func"
 echo "the os is $OS"
 
 if [ ! -e "$HOME/.config/nvim" ]; then
@@ -20,7 +22,7 @@ mkdir -p "$INSTALL_PATH"
 main() {
 	opts "$@"
 
-	cp mcp.json "$HOME"
+	cp "$SCRIPT_DIR/mcp.json" "$HOME"
 
 	CLUADE="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
 
@@ -35,11 +37,11 @@ main() {
 		ln -s "$HOME/mcp.json" "$CURSOR"
 	fi
 
-	echo "nvchad/v3 install path from: ./$SUBTREE/* to: $INSTALL_PATH"
+	echo "nvchad/v3 install path from: $SCRIPT_DIR/$SUBTREE/* to: $INSTALL_PATH"
 	if [ -z "$SUBTREE" ]; then
-		cp -r ./* "$INSTALL_PATH"
+		cp -r "$SCRIPT_DIR"/* "$INSTALL_PATH"
 	else
-		cp -r "./$SUBTREE/"* "$INSTALL_PATH"
+		cp -r "$SCRIPT_DIR/$SUBTREE/"* "$INSTALL_PATH"
 	fi
 
 	if [ $PACKAGE = true ]; then

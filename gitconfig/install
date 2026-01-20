@@ -2,8 +2,10 @@
 
 set -e
 
-mkdir -p ~/gitconfig
-cp ./.gitconfig ~/.gitconfig
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-cp github.gitconfig ~/gitconfig
-cp workspace.gitconfig ~/gitconfig
+mkdir -p ~/gitconfig
+cp "$SCRIPT_DIR/.gitconfig" ~/.gitconfig
+
+cp "$SCRIPT_DIR/github.gitconfig" ~/gitconfig
+cp "$SCRIPT_DIR/workspace.gitconfig" ~/gitconfig

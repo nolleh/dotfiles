@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 
-./gen
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+"$SCRIPT_DIR/gen"
 
 INSTALL_PATH="$HOME"/.config/scripts/bin/
 mkdir -p "$INSTALL_PATH"
 
-ln -sf "$(pwd)"/dist/cgpt "$INSTALL_PATH"
+ln -sf "$SCRIPT_DIR/dist/cgpt" "$INSTALL_PATH"
 
 #shellcheck disable=SC2002
 ENV_FILE_GREP=$(cat "$HOME"/.env | grep OPENAI_API_KEY)
 
-[ -z "$OPENAI_API_KEY" ] && [ -z "$ENV_FILE_GREP" ] && cat .env >>"$HOME"/.env
+[ -z "$OPENAI_API_KEY" ] && [ -z "$ENV_FILE_GREP" ] && [ -f "$SCRIPT_DIR/.env" ] && cat "$SCRIPT_DIR/.env" >>"$HOME"/.env

@@ -2,11 +2,13 @@
 
 set -e
 
-source ../os
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-cp ./alacritty.yml ~/.config/alacritty/
+[ -f "$SCRIPT_DIR/../os" ] && source "$SCRIPT_DIR/../os"
+
+cp "$SCRIPT_DIR/alacritty.yml" ~/.config/alacritty/
 if [ "$OS" == "MAC" ]; then
-	cp ./mac/fonts.yml ~/.config/alacritty/
+	cp "$SCRIPT_DIR/mac/fonts.yml" ~/.config/alacritty/
 elif [ "$OS" == "UBUNTU" ]; then
-	cp ./ubuntu/fonts.yml ~/.config/alacritty/
+	cp "$SCRIPT_DIR/ubuntu/fonts.yml" ~/.config/alacritty/
 fi

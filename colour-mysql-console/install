@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-cp .grcat ~/
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+cp "$SCRIPT_DIR/.grcat" ~/
 
 shopt -s nullglob
 for f in ~/.*my.cnf; do
 	echo "write pager option for $f"
 	sed -i '' -e 's/pager.*//' "$f"
-	grep "pager" .my.cnf >>"$f"
+	grep "pager" "$SCRIPT_DIR/.my.cnf" >>"$f"
 	sed -i '' '/^[[:space:]]*$/d' "$f"
 done
 shopt -u nullglob

@@ -573,6 +573,12 @@ local plugins = {
     },
     config = require("custom.configs.claudecode").config(),
   },
+
+  {
+    "nolleh/warp.nvim",
+    config = true,
+    keys = { "<leader>w" },
+  },
 }
 
 return plugins

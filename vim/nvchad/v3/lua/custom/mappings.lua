@@ -197,60 +197,79 @@ map("n", "gh", function()
   local refs = {}
   local seen = {}
 
-  local pattern_with_line = "([~%.%w/_%-][~%w%./_%-]*):(%d+)"
+  -- Combine lines for detecting wrapped paths (lines broken by terminal width)
+  local combined = ""
+  local line_offsets = {} -- line_offsets[i] = start position of line i in combined
+  local path_char = "[~%.%w/_%-]"
+  local win_width = vim.api.nvim_win_get_width(win_id)
+
   for i, line in ipairs(lines) do
-    local search_start = 1
-    while true do
-      local s, e, path, lnum = line:find(pattern_with_line, search_start)
-      if not s then
-        break
-      end
-      -- filter out timestamps like 22:35 (path is just digits)
-      if not path:match("^%d+$") and #path >= 2 then
-        local entry = path .. ":" .. lnum
-        if not seen[entry] then
-          seen[entry] = true
-          table.insert(refs, {
-            path = path,
-            line = tonumber(lnum),
-            display = entry,
-            buf_line = first + i - 1,
-            col = s - 1,
-          })
-        end
-      end
-      search_start = e + 1
+    line_offsets[i] = #combined
+    local prev_len = i > 1 and #lines[i - 1] or 0
+    local is_forced_wrap = prev_len >= win_width - 1
+
+    if is_forced_wrap and lines[i - 1]:match(path_char .. "$") and line:match("^" .. path_char) then
+      combined = combined .. line
+    else
+      combined = combined .. " " .. line
     end
+  end
+
+  -- Helper: convert combined position to (buf_line, col)
+  local function pos_to_line_col(pos)
+    for i = #line_offsets, 1, -1 do
+      if line_offsets[i] < pos then
+        return first + i - 1, pos - line_offsets[i] - 1
+      end
+    end
+    return first, pos - 1
+  end
+
+  -- Helper: check if position is visible on screen and add to refs
+  local function try_add_ref(path, lnum, display, s)
+    local buf_line, col = pos_to_line_col(s)
+    col = math.max(0, col)
+    local pos = vim.fn.screenpos(win_id, buf_line, col + 1)
+    -- Only add if visible on screen (screenpos returns row=0 if not visible)
+    if pos.row > 0 then
+      local key = buf_line .. ":" .. col .. ":" .. display
+      if not seen[key] then
+        seen[key] = true
+        table.insert(refs, { path = path, line = lnum, display = display, buf_line = buf_line, col = col })
+      end
+    end
+  end
+
+  local pattern_with_line = "([~%.%w/_%-][~%w%./_%-]*):(%d+)"
+  local search_start = 1
+  while true do
+    local s, e, path, lnum = combined:find(pattern_with_line, search_start)
+    if not s then
+      break
+    end
+    if not path:match("^%d+$") and #path >= 2 then
+      try_add_ref(path, tonumber(lnum), path .. ":" .. lnum, s)
+    end
+    search_start = e + 1
   end
 
   local pattern_file_only = "([~%.%w/_%-][~%w%./_%-]*)"
-  for i, line in ipairs(lines) do
-    local search_start = 1
-    while true do
-      local s, e, path, lnum = line:find(pattern_file_only, search_start)
-      if not s then
-        break
-      end
-      -- Skip if followed by :number (already matched above)
-      local next_chars = line:sub(e + 1, e + 2)
-      local looks_like_path = path:match("/") or path:match("%.")
-
-      if not next_chars:match("^:%d") and not seen[path] and #path >= 2 and looks_like_path then
-        seen[path] = true
-        table.insert(refs, {
-          path = path,
-          line = 1,
-          display = path,
-          buf_line = first + i - 1,
-          col = s - 1,
-        })
-      end
-      search_start = e + 1
+  search_start = 1
+  while true do
+    local s, e, path = combined:find(pattern_file_only, search_start)
+    if not s then
+      break
     end
+    local next_chars = combined:sub(e + 1, e + 2)
+    local looks_like_path = path:match("/") or path:match("%.")
+    if not next_chars:match("^:%d") and #path >= 2 and looks_like_path then
+      try_add_ref(path, 1, path, s)
+    end
+    search_start = e + 1
   end
 
   if #refs == 0 then
-    vim.notify("No file:line patterns found", vim.log.levels.INFO)
+    vim.notify("No visible file:line patterns found", vim.log.levels.INFO)
     return
   end
 
@@ -271,6 +290,7 @@ map("n", "gh", function()
   local ns = vim.api.nvim_create_namespace("file_hints")
   vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
   local hint_map = {}
+
   for idx, ref in ipairs(refs) do
     local key = get_hint_key(idx)
     hint_map[key] = ref
@@ -285,11 +305,74 @@ map("n", "gh", function()
     })
   end
 
+  if #refs == 0 then
+    vim.notify("No visible file:line patterns found", vim.log.levels.INFO)
+    return
+  end
+
   vim.cmd("redraw")
-  vim.api.nvim_echo({ { "Press hint key (or Esc to cancel: )", "Question" } }, false, {})
+  vim.api.nvim_echo({ { "Press hint key (or Esc to cancel): ", "Question" } }, false, {})
+
+  -- Check if input is a prefix of any other hint
+  local function has_longer_match(prefix)
+    for key, _ in pairs(hint_map) do
+      if key ~= prefix and key:sub(1, #prefix) == prefix then
+        return true
+      end
+    end
+    return false
+  end
+
+  -- Process the matched ref
+  local function process_ref(ref)
+    vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+    vim.api.nvim_echo({ { "" } }, false, {})
+
+    local target_win
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      local buf = vim.api.nvim_win_get_buf(win)
+      local bt = vim.bo[buf].buftype
+      local ft = vim.bo[buf].filetype
+      local cfg = vim.api.nvim_win_get_config(win)
+      if
+        (not cfg.relative or cfg.relative == "")
+        and bt ~= "terminal"
+        and bt ~= "prompt"
+        and ft ~= "neo-tree"
+        and ft ~= "NvimTree"
+        and ft ~= "oil"
+      then
+        target_win = win
+        break
+      end
+    end
+
+    local path = ref.path
+    if path:match("^~") then
+      path = path:gsub("^~", vim.fn.expand("~"))
+    elseif not path:match("^/") then
+      path = vim.fn.getcwd() .. "/" .. path
+    end
+
+    if vim.fn.filereadable(path) == 0 then
+      vim.notify("File not found: " .. path, vim.log.levels.INFO)
+      return
+    end
+
+    if target_win then
+      vim.api.nvim_win_call(target_win, function()
+        vim.cmd("edit " .. vim.fn.fnameescape(path))
+      end)
+      vim.api.nvim_set_current_win(target_win)
+    else
+      vim.cmd("edit " .. vim.fn.fnameescape(path))
+    end
+
+    vim.api.nvim_win_set_cursor(0, { ref.line, 0 })
+    vim.cmd("normal! zz")
+  end
 
   local input = ""
-  local max_len = #refs > 26 and 2 or 1
 
   while true do
     local ok, char = pcall(vim.fn.getcharstr)
@@ -302,59 +385,53 @@ map("n", "gh", function()
     input = input .. char
 
     if hint_map[input] then
-      vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
-      vim.api.nvim_echo({ { "" } }, false, {})
+      -- Exact match found
+      if has_longer_match(input) then
+        -- There are longer hints starting with this input, wait for timeout
+        local timeout_ms = vim.o.timeoutlen
+        local next_char = nil
 
-      local ref = hint_map[input]
+        vim.wait(timeout_ms, function()
+          local c = vim.fn.getchar(0)
+          if c ~= 0 then
+            next_char = vim.fn.nr2char(c)
+            return true
+          end
+          return false
+        end, 10)
 
-      local target_win
-      for _, win in ipairs(vim.api.nvim_list_wins()) do
-        local buf = vim.api.nvim_win_get_buf(win)
-        local bt = vim.bo[buf].buftype
-        local ft = vim.bo[buf].filetype
-        local cfg = vim.api.nvim_win_get_config(win)
-        if
-          (not cfg.relative or cfg.relative == "")
-          and bt ~= "terminal"
-          and bt ~= "prompt"
-          and ft ~= "neo-tree"
-          and ft ~= "NvimTree"
-          and ft ~= "oil"
-        then
-          target_win = win
-          break
+        if next_char then
+          if next_char == "\27" then -- Esc during timeout
+            vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+            vim.api.nvim_echo({ { "" } }, false, {})
+            return
+          end
+          input = input .. next_char
+          if hint_map[input] then
+            process_ref(hint_map[input])
+            return
+          elseif not has_longer_match(input) then
+            vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
+            vim.api.nvim_echo({ { "No match for: " .. input, "ErrorMsg" } }, false, {})
+            return
+          end
+          -- Continue loop if still has potential matches
+        else
+          -- Timeout - use current match
+          process_ref(hint_map[input])
+          return
         end
-      end
-
-      local path = ref.path
-      if path:match("^~") then
-        path = path:gsub("^~", vim.fn.expand("~"))
-      elseif not path:match("^/") then
-        path = vim.fn.getcwd() .. "/" .. path
-      end
-
-      if vim.fn.filereadable(path) == 0 then
-        vim.notify("File not found: " .. path, vim.log.levels.INFO)
+      else
+        -- No longer hints, process immediately
+        process_ref(hint_map[input])
         return
       end
-
-      if target_win then
-        vim.api.nvim_win_call(target_win, function()
-          vim.cmd("edit " .. vim.fn.fnameescape(path))
-        end)
-        vim.api.nvim_set_current_win(target_win)
-      else
-        vim.cmd("edit " .. vim.fn.fnameescape(path))
-      end
-
-      vim.api.nvim_win_set_cursor(0, { ref.line, 0 })
-      vim.cmd("normal! zz")
-
-      return
-    elseif #input >= max_len then
+    elseif not has_longer_match(input) then
+      -- No match and no potential longer match
       vim.api.nvim_buf_clear_namespace(bufnr, ns, 0, -1)
       vim.api.nvim_echo({ { "No match for: " .. input, "ErrorMsg" } }, false, {})
       return
     end
+    -- Has potential longer match, continue waiting for input
   end
 end, { desc = "File hints: inline labels" })

@@ -220,7 +220,7 @@ vim.api.nvim_create_user_command("DotnetFormat", function()
 
   local project_dir = vim.fn.fnamemodify(project_file, ":h")
   local project_name = vim.fn.fnamemodify(project_file, ":t")
-  local relative_filepath = "./" .. vim.fn.fnamemodify(filepath, ":t")
+  local relative_filepath = filepath:gsub("^" .. vim.pesc(project_dir) .. "/", "")
 
   local cmd = string.format(
     "dotnet format whitespace %s --include %s --no-restore",

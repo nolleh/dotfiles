@@ -107,7 +107,7 @@ local plugins = {
         "black",
         "gopls",
         "helm-ls",
-        "kotlin-language-server",
+        "kotlin-lsp",
         "ktlint",
 
         -- c++
@@ -118,7 +118,6 @@ local plugins = {
         "buf",
 
         -- c#
-        "csharp-language-server",
         "omnisharp",
         "csharpier",
         "deno",

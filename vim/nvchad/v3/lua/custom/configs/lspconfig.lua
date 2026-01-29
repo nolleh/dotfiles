@@ -15,10 +15,10 @@ local servers = {
   "gopls",
   "cmake",
   "ccls",
-  "kotlin_language_server",
   "jsonls",
   "tailwindcss",
   "omnisharp",
+  "kotlin-lsp"
 }
 
 local util = require("lspconfig/util")

@@ -548,7 +548,7 @@ local plugins = {
   },
 
   {
-    "coder/claudecode.nvim",
+    "nolleh/claudecode.nvim",
     dependencies = { "folke/snacks.nvim" },
     opts = require("custom.configs.claudecode").opts,
     keys = {

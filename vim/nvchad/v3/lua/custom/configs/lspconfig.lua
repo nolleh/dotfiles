@@ -105,6 +105,17 @@ for _, lsp in ipairs(servers) do
     local mason = require("custom.utils").runsys("echo $MASON")
     config.cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll", "--languageserver" }
     config.settings = require("custom.configs.omnisharp").config
+
+    -- Disable Neovim's file watching to prevent UI freezing on external file changes.
+    -- OmniSharp has its own file watcher that handles this asynchronously on the server side.
+    config.capabilities = vim.tbl_deep_extend("force", nvlsp.capabilities, {
+      workspace = {
+        didChangeWatchedFiles = {
+          dynamicRegistration = false,
+        },
+      },
+    })
+
     config.on_attach = function(client, bufnr)
       nvlsp.on_attach(client, bufnr)
       vim.keymap.set("n", "gd", function()

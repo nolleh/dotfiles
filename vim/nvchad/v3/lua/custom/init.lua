@@ -126,12 +126,32 @@ vim.api.nvim_create_autocmd("LspAttach", {
     if client and client.server_capabilities.documentHighlightProvider then
       local highlight_augroup = vim.api.nvim_create_augroup("kickstart-lsp-highlight", { clear = false })
       if client and client.server_capabilities.codeActionProvider then
-        -- local bufnr = vim.api.nvim_get_current_buf()
-        -- if client and client.supports_method("textDocument/CodeAction", bufnr) then
+        -- Debounced document highlight to prevent UI freezing when LSP is busy
+        local highlight_timer = nil
         vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
           buffer = event.buf,
           group = highlight_augroup,
-          callback = vim.lsp.buf.document_highlight,
+          callback = function()
+            -- Cancel pending highlight request
+            if highlight_timer then
+              vim.fn.timer_stop(highlight_timer)
+            end
+            -- Skip if omnisharp has too many pending requests
+            if client.name == "omnisharp" then
+              local pending = vim.tbl_count(client.requests or {})
+              if pending > 3 then
+                return
+              end
+            end
+            -- Debounce: wait 150ms before actually requesting
+            highlight_timer = vim.fn.timer_start(150, function()
+              vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(event.buf) then
+                  vim.lsp.buf.document_highlight()
+                end
+              end)
+            end)
+          end,
         })
       end
 

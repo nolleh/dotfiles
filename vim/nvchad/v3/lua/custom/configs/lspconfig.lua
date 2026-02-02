@@ -106,6 +106,83 @@ for _, lsp in ipairs(servers) do
     config.cmd = { "dotnet", mason .. "/packages/omnisharp/libexec/OmniSharp.dll", "--languageserver" }
     config.settings = require("custom.configs.omnisharp").config
 
+    -- Cache of loaded solutions: { [sln_dir] = { project_dirs = { "/abs/path/to/project", ... } } }
+    _G.omnisharp_solution_cache = _G.omnisharp_solution_cache or {}
+
+    -- Parse .sln file and extract project directories
+    local function parse_solution_dirs(sln_path)
+      local project_dirs = {}
+      local file = io.open(sln_path, "r")
+      if not file then
+        return project_dirs
+      end
+
+      local sln_dir = vim.fn.fnamemodify(sln_path, ":h")
+      for line in file:lines() do
+        local _, rel_path = line:match('Project%("[^"]*"%)%s*=%s*"([^"]+)"%s*,%s*"([^"]+%.csproj)"')
+        if rel_path then
+          local abs_path = vim.fn.simplify(sln_dir .. "/" .. rel_path:gsub("\\", "/"))
+          local project_dir = vim.fn.fnamemodify(abs_path, ":h")
+          table.insert(project_dirs, project_dir)
+        end
+      end
+      file:close()
+      return project_dirs
+    end
+
+    -- Check if file belongs to any cached solution
+    local function find_cached_solution(fname)
+      for sln_dir, cache in pairs(_G.omnisharp_solution_cache) do
+        for _, project_dir in ipairs(cache.project_dirs) do
+          if fname:find(project_dir, 1, true) == 1 then
+            return sln_dir
+          end
+        end
+      end
+      return nil
+    end
+
+    -- Find nearest .sln file
+    local function find_nearest_sln(fname)
+      local dir = vim.fn.fnamemodify(fname, ":h")
+      while dir ~= "/" do
+        local slns = vim.fn.glob(dir .. "/*.sln", false, true)
+        if #slns > 0 then
+          return slns[1], dir
+        end
+        dir = vim.fn.fnamemodify(dir, ":h")
+      end
+      return nil, nil
+    end
+
+    -- Dynamic root_dir: reuse existing solution if file belongs to it
+    -- nvim 0.11+ requires root_dir(bufnr, on_dir) signature with on_dir() callback
+    config.root_dir = function(bufnr, on_dir)
+      local fname = vim.api.nvim_buf_get_name(bufnr)
+
+      -- 1. Check if file belongs to already loaded solution
+      local cached_sln_dir = find_cached_solution(fname)
+      if cached_sln_dir then
+        on_dir(cached_sln_dir)
+        return
+      end
+
+      -- 2. Find nearest .sln and cache it
+      local sln_path, sln_dir = find_nearest_sln(fname)
+      if sln_path and sln_dir then
+        local project_dirs = parse_solution_dirs(sln_path)
+        _G.omnisharp_solution_cache[sln_dir] = { project_dirs = project_dirs }
+        on_dir(sln_dir)
+        return
+      end
+
+      -- 3. Fallback to .csproj
+      local fallback = util.root_pattern("*.csproj")(fname)
+      if fallback then
+        on_dir(fallback)
+      end
+    end
+
     -- Disable Neovim's file watching to prevent UI freezing on external file changes.
     -- OmniSharp has its own file watcher that handles this asynchronously on the server side.
     config.capabilities = vim.tbl_deep_extend("force", nvlsp.capabilities, {

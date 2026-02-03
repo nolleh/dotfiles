@@ -49,12 +49,28 @@ local plugins = {
     opts = {
       renderer = {
         highlight_git = true,
+        group_empty = true,
       },
       view = {
         width = {
           max = 40,
         },
       },
+      on_attach = function(bufnr)
+        local api = require("nvim-tree.api")
+        api.config.mappings.default_on_attach(bufnr)
+
+        -- Toggle group_empty with '<leader>g'
+        vim.keymap.set("n", "<leader>g", function()
+          local core = require("nvim-tree.core")
+          local explorer = core.get_explorer()
+          if explorer then
+            explorer.opts.renderer.group_empty = not explorer.opts.renderer.group_empty
+            api.tree.reload()
+            local status = explorer.opts.renderer.group_empty and "ON" or "OFF"
+          end
+        end, { buffer = bufnr, desc = "Toggle group_empty" })
+      end,
     },
   },
 

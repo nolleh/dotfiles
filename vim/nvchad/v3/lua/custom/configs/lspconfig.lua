@@ -18,7 +18,7 @@ local servers = {
   "jsonls",
   "tailwindcss",
   "omnisharp",
-  "kotlin-lsp"
+  "kotlin_lsp"
 }
 
 local util = require("lspconfig/util")

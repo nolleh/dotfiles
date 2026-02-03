@@ -49,7 +49,7 @@ local plugins = {
     opts = {
       renderer = {
         highlight_git = true,
-        group_empty = true,
+        group_empty = false,
       },
       view = {
         width = {

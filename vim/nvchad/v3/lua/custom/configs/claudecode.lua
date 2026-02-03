@@ -11,6 +11,7 @@ M.opts = {
     vertical_split = true, -- Use vertical splits for diffs
     open_in_current_tab = false, -- Don't create new tabs
     keep_terminal_focus = false, -- If true, moves focus back to terminal after diff opens
+    minimize_empty_diff_pane = true, -- If true, minimize the empty left pane width for new files (keeps diff highlighting)
   },
 }
 

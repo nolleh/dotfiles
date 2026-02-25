@@ -269,3 +269,61 @@ vim.api.nvim_create_user_command("DotnetFormat", function()
     end,
   })
 end, { desc = "Format C# file with dotnet format" })
+
+vim.api.nvim_create_user_command("SmtResize", function(opts)
+  local amount = opts.args
+  if amount == "" then
+    amount = "+10"
+  end
+
+  local cur_win = vim.api.nvim_get_current_win()
+  local cur_pos = vim.api.nvim_win_get_position(cur_win)
+  local cur_row, cur_col = cur_pos[1], cur_pos[2]
+
+  local has_horizontal_neighbor = false
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if win ~= cur_win then
+      local pos = vim.api.nvim_win_get_position(win)
+      -- Same row but dfferrent column = vertical split (side by side)
+      if pos[1] == cur_row and pos[2] ~= cur_col then
+        has_horizontal_neighbor = true
+        break
+      end
+    end
+  end
+
+  if has_horizontal_neighbor then
+    vim.cmd("vertical resize " .. amount)
+  else
+    vim.cmd("resize " .. amount)
+  end
+end, { nargs = "?", desc = "Smart resize based on split direction" })
+
+-- Clean Claude Code terminal output on yank
+-- Removes trailling whitespace from copied text
+vim.api.nvim_create_autocmd("TextYankPost", {
+  pattern = "*",
+  callback = function()
+    if not vim.api.nvim_buf_get_name(0):match("^term://.*claude") then
+      return
+    end
+
+    local reg = vim.v.event.regname == "" and '"' or vim.v.event.regname
+    local regtype = vim.fn.getregtype(reg)
+    local content = vim.fn.getreg(reg)
+
+    if content and content ~= "" then
+      -- Strip trailing whitespace from each line
+      content = content:gsub("[^\n]*", function(line)
+        return line:gsub("%s+$", "")
+      end)
+
+      vim.fn.setreg(reg, content, regtype)
+
+      if vim.opt.clipboard:get()[1] then
+        vim.fn.setreg("+", content, regtype)
+        vim.fn.setreg("*", content, regtype)
+      end
+    end
+  end,
+})

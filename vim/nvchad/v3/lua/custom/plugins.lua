@@ -41,6 +41,7 @@ local plugins = {
         "kdl",
         "xml",
         "tsx",
+        "make"
       },
     },
   },
@@ -137,6 +138,7 @@ local plugins = {
         "omnisharp",
         "csharpier",
         "deno",
+        "mbake"
       },
     },
     config = function(_, opts)

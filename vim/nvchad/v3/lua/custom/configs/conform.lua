@@ -14,8 +14,10 @@ local options = {
     cpp = { "clang-format" },
     go = { "gofmt" },
     -- cs: instead conform, use autocmd to use dotnet format
+    -- cs = { "csharpier" }
     toml = { "prettier" },
     python = { "black" },
+    make = { "bake" },
   },
 
   -- format_on_save = {

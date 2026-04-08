@@ -2,13 +2,13 @@ local map = vim.keymap.set
 
 map("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
-map("n", "<leader>fm", function()
-  if vim.bo.filetype == "cs" then
-    vim.cmd("DotnetFormat")
-  else
-    require("conform").format({ lsp_format = "fallback" })
-  end
-end, { desc = "Format file" })
+-- map("n", "<leader>fm", function()
+--   if vim.bo.filetype == "cs" then
+--     vim.cmd("DotnetFormat")
+--   else
+--     require("conform").format({ lsp_format = "fallback" })
+--   end
+-- end, { desc = "Format file" })
 
 -- declared in NvChadV2
 map("n", "<leader>cc", function()

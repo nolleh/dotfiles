@@ -250,6 +250,22 @@ vim.api.nvim_create_user_command("DotnetFormat", function()
 
   vim.fn.jobstart(cmd, {
     cwd = project_dir,
+    stdout_buffered = true,
+    stderr_buffered = true,
+    on_stdout = function(_, data)
+      if data and #data > 0 then
+        vim.schedule(function()
+          vim.notify("dotnet stdout:\n" .. table.concat(data, "\n"))
+        end)
+      end
+    end,
+    on_stderr = function(_, data)
+      if data and #data > 0 then
+        vim.schedule(function()
+          vim.notify("dotnet stderr:\n" .. table.concat(data, "\n"), vim.log.level.WARN)
+        end)
+      end
+    end,
     on_exit = function(_, exit_code)
       vim.schedule(function()
         if exit_code == 0 then

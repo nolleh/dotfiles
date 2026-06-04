@@ -1,0 +1,4 @@
+interface:
+  display_name: "Commit Convention"
+  short_description: "Apply the Udacity commit message convention."
+  default_prompt: "Write a commit message using the Udacity convention."

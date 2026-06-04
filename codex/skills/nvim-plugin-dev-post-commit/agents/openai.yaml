@@ -1,0 +1,7 @@
+interface:
+  display_name: "Nvim Plugin Post Commit"
+  short_description: "Write an implementation note after a Neovim plugin commit."
+  default_prompt: "Use $nvim-plugin-dev-post-commit after committing Neovim plugin changes to document the implementation for a plugin-development beginner."
+
+policy:
+  allow_implicit_invocation: true

@@ -133,6 +133,15 @@ main() {
 	cp ./claude/settings.json ~/.claude/settings.json
 	cp ./claude/claude-powerline.json ~/.claude/claude-powerline.json
 
+	echo "$(tput setaf 2)install codex skills..$(tput sgr0)"
+	if [ -d ./codex/skills ]; then
+		mkdir -p ~/.codex/skills
+		for skill_dir in ./codex/skills/*; do
+			[ -d "$skill_dir" ] || continue
+			cp -R "$skill_dir" ~/.codex/skills/
+		done
+	fi
+
 	[ -f ./vim/install ] && echo "$(tput setaf 2)Running vim install script$(tput sgr0)" && cd ./vim && ./install "$@" && cd ..
 	[ -f ./scripts/install ] && echo "$(tput setaf 2)Running scripts install script$(tput sgr0)" && cd ./scripts/ && ./install "$@" && cd ..
 

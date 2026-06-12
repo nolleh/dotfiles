@@ -18,7 +18,7 @@ local servers = {
   "jsonls",
   "tailwindcss",
   "omnisharp",
-  "kotlin_lsp"
+  "kotlin_lsp",
 }
 
 local util = require("lspconfig/util")
@@ -52,7 +52,7 @@ for _, lsp in ipairs(servers) do
     config.settings = {
       Lua = {
         -- indicate this Lua code runs in Neovim's LuaJIT environment
-        runtime = { version = "LuaJIT"},
+        runtime = { version = "LuaJIT" },
         -- here are the external libraries/APIs available at runtime
         workspace = {
           library = {
@@ -61,10 +61,10 @@ for _, lsp in ipairs(servers) do
             vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy",
             -- lua_ls pre-bundled type definitions, exposes libuv through vim.loop(old) and vim.uv (newer)
             -- without this, lua_ls wouldn't understand these async I/O APIs.
-            "${3rd}/luv/library"
-          }
-        }
-      }
+            "${3rd}/luv/library",
+          },
+        },
+      },
     }
   elseif lsp == "pyright" then
     local function get_python_path(workspace)
@@ -224,6 +224,8 @@ for _, lsp in ipairs(servers) do
         desc = "Go to implementation (OmniSharp)",
       })
     end
+  elseif lsp == "kotlin_lsp" then
+    config.cmd = { "kotlin-lsp", "--stdio" }
   end
 
   vim.lsp.config(lsp, config)

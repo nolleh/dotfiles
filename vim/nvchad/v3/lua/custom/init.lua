@@ -293,22 +293,47 @@ vim.api.nvim_create_user_command("SmtResize", function(opts)
   end
 
   local cur_win = vim.api.nvim_get_current_win()
-  local cur_pos = vim.api.nvim_win_get_position(cur_win)
-  local cur_row, cur_col = cur_pos[1], cur_pos[2]
+  local function bounds(win)
+    local pos = vim.api.nvim_win_get_position(win)
+    local row = pos[1]
+    local col = pos[2]
+    local height = vim.api.nvim_win_get_height(win)
+    local width = vim.api.nvim_win_get_width(win)
+    return {
+      row = row,
+      col = col,
+      bottom = row + height,
+      right = col + width,
+    }
+  end
 
-  local has_horizontal_neighbor = false
-  for _, win in ipairs(vim.api.nvim_list_wins()) do
+  local function overlaps(a_start, a_end, b_start, b_end)
+    return a_start < b_end and b_start < a_end
+  end
+
+  local function adjacent(edge, start)
+    return math.abs(edge - start) <= 1
+  end
+
+  local cur = bounds(cur_win)
+  local has_vertical_boundary = false
+
+  -- TODO: If a plugin opens as a horizontal pane, detect grouped plugin windows
+  -- by buffer/app identity and resize the group height when that dimension is small.
+  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
     if win ~= cur_win then
-      local pos = vim.api.nvim_win_get_position(win)
-      -- Same row but dfferrent column = vertical split (side by side)
-      if pos[1] == cur_row and pos[2] ~= cur_col then
-        has_horizontal_neighbor = true
-        break
+      local other = bounds(win)
+
+      if
+        (adjacent(other.right, cur.col) or adjacent(cur.right, other.col))
+        and overlaps(cur.row, cur.bottom, other.row, other.bottom)
+      then
+        has_vertical_boundary = true
       end
     end
   end
 
-  if has_horizontal_neighbor then
+  if has_vertical_boundary then
     vim.cmd("vertical resize " .. amount)
   else
     vim.cmd("resize " .. amount)

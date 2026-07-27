@@ -58,6 +58,14 @@ When asked to commit or write a commit message:
    reasons.
 5. Before running `git commit`, show the exact message unless the user has
    already supplied it or explicitly asked for an automatic commit.
+6. Respect repository pre-commit hooks as authoritative validation. Run a
+   normal `git commit` and never use `--no-verify` unless the user explicitly
+   requests bypassing hooks.
+7. If a hook modifies files and aborts the commit, preserve and inspect those
+   changes, restage the intended files, and rerun the same commit so the hooks
+   validate the final staged content. Do not revert or overwrite hook changes.
+8. If a hook fails without modifying files, report the failure, fix it when
+   the fix is within scope, and rerun the commit. Do not bypass the hook.
 
 ## Examples
 

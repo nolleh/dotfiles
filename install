@@ -133,12 +133,27 @@ main() {
 	cp ./claude/settings.json ~/.claude/settings.json
 	cp ./claude/claude-powerline.json ~/.claude/claude-powerline.json
 
+	echo "$(tput setaf 2)install codex AGENTS.md..$(tput sgr0)"
+	mkdir -p ~/.codex
+	if [ -f ./codex/AGENTS.md ]; then
+		if [ "$OVERWRITE_CODEX" = true ] || [ ! -e ~/.codex/AGENTS.md ]; then
+			cp ./codex/AGENTS.md ~/.codex/AGENTS.md
+		else
+			echo "skip codex AGENTS.md (already exists; use --overwrite-codex)"
+		fi
+	fi
+
 	echo "$(tput setaf 2)install codex skills..$(tput sgr0)"
 	if [ -d ./codex/skills ]; then
 		mkdir -p ~/.codex/skills
 		for skill_dir in ./codex/skills/*; do
 			[ -d "$skill_dir" ] || continue
-			cp -R "$skill_dir" ~/.codex/skills/
+			skill_name=$(basename "$skill_dir")
+			if [ "$OVERWRITE_CODEX" = true ] || [ ! -e "$HOME/.codex/skills/$skill_name" ]; then
+				cp -R "$skill_dir" ~/.codex/skills/
+			else
+				echo "skip codex skill: $skill_name (already exists; use --overwrite-codex)"
+			fi
 		done
 	fi
 

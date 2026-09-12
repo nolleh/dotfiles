@@ -61,9 +61,12 @@ When asked to commit or write a commit message:
 6. Respect repository pre-commit hooks as authoritative validation. Run a
    normal `git commit` and never use `--no-verify` unless the user explicitly
    requests bypassing hooks.
-7. If a hook modifies files and aborts the commit, preserve and inspect those
-   changes, restage the intended files, and rerun the same commit so the hooks
-   validate the final staged content. Do not revert or overwrite hook changes.
+7. If a hook, including a formatter run by pre-commit, modifies files and
+   aborts the commit, treat those formatting changes as part of the intended
+   result. Preserve and inspect them, restage the intended files, and rerun the
+   same commit so the hooks validate the final staged content. Do not revert,
+   overwrite, or manually undo hook-produced formatting changes merely to
+   restore the pre-hook diff.
 8. If a hook fails without modifying files, report the failure, fix it when
    the fix is within scope, and rerun the commit. Do not bypass the hook.
 

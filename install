@@ -9,6 +9,12 @@ echo "$(tput setaf 2)the os is $OS$(tput sgr0)"
 
 main() {
 	opts "$@"
+	# This option belongs to the top-level installer. Do not pass it to
+	# sub-installers, which have their own option parsers.
+	local -a child_args=()
+	for arg in "$@"; do
+		[ "$arg" = --overwrite-codex ] || child_args+=("$arg")
+	done
 	echo "$(tput setaf 2)ZELLIJ $ZELLIJ$(tput sgr0)"
 	if [ $PACKAGE = true ]; then
 		PKGM=$(getpkgm)
@@ -107,7 +113,7 @@ main() {
 
 	[ -f .env.workspace ] && cp .env.workspace ~/.env.workspace
 
-	echo "$(tput setaf 2)Running colour-mysql-console install script$(tput sgr0)" && (cd ./colour-mysql-console && ./install "$@") &
+	echo "$(tput setaf 2)Running colour-mysql-console install script$(tput sgr0)" && (cd ./colour-mysql-console && ./install "${child_args[@]}") &
 	spinner
 
 	echo "$(tput setaf 2)install kitty config..$(tput sgr0)"
@@ -133,6 +139,12 @@ main() {
 	cp ./claude/settings.json ~/.claude/settings.json
 	cp ./claude/claude-powerline.json ~/.claude/claude-powerline.json
 
+	if [ "$OVERWRITE_CODEX" = true ]; then
+		echo "$(tput setaf 2)Codex overwrite mode: ON$(tput sgr0)"
+	else
+		echo "$(tput setaf 3)Codex overwrite mode: OFF (existing files will be kept)$(tput sgr0)"
+	fi
+
 	echo "$(tput setaf 2)install codex AGENTS.md..$(tput sgr0)"
 	mkdir -p ~/.codex
 	if [ -f ./codex/AGENTS.md ]; then
@@ -157,8 +169,8 @@ main() {
 		done
 	fi
 
-	[ -f ./vim/install ] && echo "$(tput setaf 2)Running vim install script$(tput sgr0)" && cd ./vim && ./install "$@" && cd ..
-	[ -f ./scripts/install ] && echo "$(tput setaf 2)Running scripts install script$(tput sgr0)" && cd ./scripts/ && ./install "$@" && cd ..
+	[ -f ./vim/install ] && echo "$(tput setaf 2)Running vim install script$(tput sgr0)" && cd ./vim && ./install "${child_args[@]}" && cd ..
+	[ -f ./scripts/install ] && echo "$(tput setaf 2)Running scripts install script$(tput sgr0)" && cd ./scripts/ && ./install "${child_args[@]}" && cd ..
 
 	# install python3-pip "$PKGM"
 }

@@ -13,8 +13,8 @@ local options = {
 
     cpp = { "clang-format" },
     go = { "gofmt" },
-    -- cs: instead conform, use autocmd to use dotnet format
-    cs = { "csharpier" },
+    -- Use Roslyn's LSP formatter, which follows .editorconfig.
+    cs = { lsp_format = "first" },
     toml = { "prettier" },
     python = { "black" },
     make = { "bake" },

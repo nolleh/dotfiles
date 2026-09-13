@@ -44,8 +44,6 @@ end
 for _, lsp in ipairs(servers) do
   local config = {
     on_attach = on_attach,
-    on_init = nvlsp.on_init,
-    capabilities = nvlsp.capabilities,
   }
 
   if lsp == "lua_ls" then

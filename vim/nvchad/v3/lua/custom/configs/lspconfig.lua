@@ -17,7 +17,6 @@ local servers = {
   "ccls",
   "jsonls",
   "tailwindcss",
-  "roslyn",
   "kotlin_lsp",
 }
 

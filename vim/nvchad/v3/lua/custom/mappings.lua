@@ -104,6 +104,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.keymap.set("n", "<leader>lp", function()
         vim.cmd("Roslyn target")
       end, vim.tbl_extend("force", opts, { desc = "Select Roslyn target" }))
+
+      vim.keymap.set("n", "<leader>lb", function()
+        require("custom.configs.omnisharp").go_back()
+      end, vim.tbl_extend("force", opts, { desc = "Go back to previous project" }))
+
+      vim.keymap.set("n", "<leader>lh", function()
+        require("custom.configs.omnisharp").history_picker()
+      end, vim.tbl_extend("force", opts, { desc = "Show project history" }))
     elseif client and client.name == "omnisharp" then
       local bufnr = args.buf
       local opts = { buffer = bufnr }

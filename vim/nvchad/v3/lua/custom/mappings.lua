@@ -102,8 +102,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
       local opts = { buffer = bufnr }
 
       vim.keymap.set("n", "<leader>lp", function()
-        require("custom.configs.roslyn").select_target()
-      end, vim.tbl_extend("force", opts, { desc = "Select Roslyn target" }))
+        require("custom.configs.omnisharp").load_project_picker()
+      end, vim.tbl_extend("force", opts, { desc = "Navigate C# project" }))
 
       vim.keymap.set("n", "<leader>lb", function()
         require("custom.configs.omnisharp").go_back()

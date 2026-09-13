@@ -102,7 +102,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       local opts = { buffer = bufnr }
 
       vim.keymap.set("n", "<leader>lp", function()
-        vim.cmd("Roslyn target")
+        require("custom.configs.roslyn").select_target()
       end, vim.tbl_extend("force", opts, { desc = "Select Roslyn target" }))
 
       vim.keymap.set("n", "<leader>lb", function()

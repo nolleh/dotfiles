@@ -1,0 +1,4 @@
+interface:
+  display_name: "Engineering Growth Notes"
+  short_description: "Capture reusable lessons from development cycles."
+  default_prompt: "Turn this development cycle into reusable engineering notes, patterns, and checklists."

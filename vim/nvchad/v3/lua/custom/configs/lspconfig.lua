@@ -17,7 +17,7 @@ local servers = {
   "ccls",
   "jsonls",
   "tailwindcss",
-  "omnisharp",
+  "roslyn",
   "kotlin_lsp",
 }
 

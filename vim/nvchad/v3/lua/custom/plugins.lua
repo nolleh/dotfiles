@@ -92,13 +92,25 @@ local plugins = {
   },
 
   {
+    "seblyng/roslyn.nvim",
+    ft = { "cs", "razor" },
+    dependencies = {
+      "neovim/nvim-lspconfig",
+      "williamboman/mason.nvim",
+    },
+    opts = {
+      filewatching = "roslyn",
+      broad_search = true,
+    },
+  },
+
+  {
     "williamboman/mason.nvim",
     cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUpdate", "MasonUninstall", "MasonUninstallAll" },
     opts = {
       ensure_installed = {
         "codespell",
         "yaml-language-server",
-        "omnisharp",
         "glow",
 
         -- lua stuff
@@ -135,7 +147,7 @@ local plugins = {
         "buf",
 
         -- c#
-        "omnisharp",
+        "roslyn",
         "csharpier",
         "deno",
         "mbake"
@@ -143,6 +155,10 @@ local plugins = {
     },
     config = function(_, opts)
       dofile(vim.g.base46_cache .. "mason")
+      opts.registries = {
+        "github:mason-org/mason-registry",
+        "github:Crashdummyy/mason-registry",
+      }
       require("mason").setup(opts)
 
       -- custom cmd to install all mason binaries listed
@@ -327,13 +343,6 @@ local plugins = {
   --   end,
   -- },
   --
-  {
-    "Hoffs/omnisharp-extended-lsp.nvim",
-    ft = {
-      "cs",
-    },
-  },
-
   {
     "folke/noice.nvim",
     event = "VeryLazy",

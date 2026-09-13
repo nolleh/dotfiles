@@ -93,11 +93,18 @@ map("n", "<leader>ax", function()
   vim.cmd("NvimTreeToggle")
 end, { desc = "close all buf but current" })
 
--- OmniSharp specific mappings - only when OmniSharp is attached
+-- C# project/solution target mappings
 vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(args)
     local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if client and client.name == "omnisharp" then
+    if client and client.name == "roslyn" then
+      local bufnr = args.buf
+      local opts = { buffer = bufnr }
+
+      vim.keymap.set("n", "<leader>lp", function()
+        vim.cmd("Roslyn target")
+      end, vim.tbl_extend("force", opts, { desc = "Select Roslyn target" }))
+    elseif client and client.name == "omnisharp" then
       local bufnr = args.buf
       local opts = { buffer = bufnr }
 
@@ -184,4 +191,3 @@ vim.api.nvim_create_autocmd("FileType", {
     end, { buffer = true, desc = "Toggle markdown checkbox" })
   end,
 })
-

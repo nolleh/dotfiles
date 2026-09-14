@@ -5,11 +5,15 @@ local plugins = {
   },
   {
     "nvim-treesitter/nvim-treesitter",
+    branch = "main",
+    lazy = false,
     build = ":TSUpdate",
-    event = { "BufReadPost", "BufNewFile" },
+    -- Keep NvChad's :TSInstallAll from reinstalling Neovim-bundled parsers.
     opts = {
-      -- A list of parser names or "all"
-      ensure_installed = {
+      ensure_installed = { "luadoc", "printf" },
+    },
+    config = function()
+      local parsers = {
         "bash",
         "css",
         "scss",
@@ -19,8 +23,6 @@ local plugins = {
         "javascript",
         "typescript",
         "python",
-        "vim",
-        "vimdoc",
         "regex",
         "sql",
         "prisma",
@@ -29,21 +31,44 @@ local plugins = {
         "gosum",
         "yaml",
         "glimmer",
-        "c",
         "cpp",
         "cmake",
         "proto",
         "kotlin",
         "mermaid",
-        "markdown",
-        "markdown_inline",
         "c_sharp",
         "kdl",
         "xml",
         "tsx",
         "make"
-      },
-    },
+      }
+
+      local treesitter = require("nvim-treesitter")
+      -- C++ inherits C queries, but Neovim 0.12 already ships a compatible C
+      -- parser and query pair. The installer reloads parser metadata before
+      -- each install/update, so apply this after that reload.
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TSUpdate",
+        group = vim.api.nvim_create_augroup("custom-treesitter-parsers", { clear = true }),
+        callback = function()
+          require("nvim-treesitter.parsers").cpp.requires = {}
+        end,
+      })
+      treesitter.setup()
+      -- Install missing parsers on regular startup. Existing parsers are left intact;
+      -- :TSUpdate (the plugin build step) performs parser upgrades.
+      treesitter.install(parsers)
+
+      vim.api.nvim_create_autocmd("FileType", {
+        group = vim.api.nvim_create_augroup("custom-treesitter-start", { clear = true }),
+        callback = function(args)
+          local lang = vim.treesitter.language.get_lang(vim.bo[args.buf].filetype)
+          if lang then
+            pcall(vim.treesitter.start, args.buf, lang)
+          end
+        end,
+      })
+    end,
   },
   {
     "nvim-tree/nvim-tree.lua",

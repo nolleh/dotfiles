@@ -7,9 +7,17 @@ description: Apply the Udacity Git Commit Message Style Guide when Codex writes,
 
 ## Rules
 
-Follow the Udacity Git Commit Message Style Guide.
+Follow the Udacity Git Commit Message Style Guide. Add a component scope when
+it helps identify which part of a multi-component repository changed.
 
-Use this structure:
+Use this structure when a scope is useful:
+
+```text
+type(scope): Subject
+```
+
+For a single-component repository, or when no useful scope applies, omit the
+scope:
 
 ```text
 type: Subject
@@ -28,6 +36,23 @@ how. Separate the title from the body with a blank line and wrap body lines
 at about 72 characters.
 
 Use the footer only for issue references, such as `Resolves: #123`.
+
+## Scopes
+
+Infer the scope from the changed paths and the repository's own terminology.
+Keep it concise and lowercase. In a multi-component repository, use a scope
+to make the affected component clear. Prefer a specific subcomponent when it
+is more useful than the top-level folder; for example, use `nvim` for Neovim
+configuration under `vim/`.
+
+For this dotfiles repository, useful scopes include `nvim`, `vim`, `alacritty`,
+`kitty`, `zellij`, `lazygit`, `claude`, `codex`, `gitconfig`, `install`,
+`scripts`, `os`, `func`, `includes`, and `colour-mysql-console`. Choose another
+scope when that better names the changed component.
+
+For a change spanning multiple distinct components, use comma-separated
+scopes, such as `feat(nvim,codex): Add shared editor tooling`. Do not add a
+scope just for consistency when the repository has only one component.
 
 ## Types
 
@@ -52,8 +77,10 @@ When asked to commit or write a commit message:
 
 1. Inspect the staged diff first. If nothing is staged, inspect the working
    tree and state whether the message is based on unstaged changes.
-2. Choose one type from the allowed Udacity types.
-3. Write a title in the form `type: Subject`.
+2. Choose one type from the allowed Udacity types and determine whether the
+   repository has a useful component scope for this change.
+3. Write a title in the form `type(scope): Subject` when a scope applies;
+   otherwise use `type: Subject`.
 4. Add a body only if the change needs explanation or multiple related
    reasons.
 5. Before running `git commit`, show the exact message unless the user has
@@ -73,15 +100,15 @@ When asked to commit or write a commit message:
 ## Examples
 
 ```text
-feat: Add project search filter
+feat(nvim): Add filtered LSP symbol picker
 ```
 
 ```text
-fix: Prevent crash on empty response
+fix(alacritty): Correct terminal padding
 ```
 
 ```text
-chore: Update package lockfile
+chore(codex): Update skill metadata
 ```
 
 ```text

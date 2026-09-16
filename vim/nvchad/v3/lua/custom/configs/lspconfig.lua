@@ -25,20 +25,65 @@ local path = util.path
 
 local function on_attach(client, bufnr)
   nvlsp.on_attach(client, bufnr)
-  vim.keymap.set("n", "gd", function()
-    require("telescope.builtin").lsp_definitions()
-  end, { buffer = bufnr, desc = "Lsp definition (Telescope)" })
-  vim.keymap.set("n", "gD", function()
-    require("telescope.builtin").lsp_type_definitions()
-  end, { buffer = bufnr, desc = "Lsp type definition (Telescope)" })
-  vim.keymap.set("n", "gr", function()
-    require("telescope.builtin").lsp_references()
-  end, { buffer = bufnr, desc = "Lsp references (Telescope)" })
-
-  vim.keymap.set("n", "gi", function()
-    require("telescope.builtin").lsp_implementations()
-  end, { buffer = bufnr, desc = "Lsp implemenations (Telescope)" })
 end
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspKeymaps", { clear = true }),
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    local bufnr = ev.buf
+    local handlers
+
+    local mappings = {
+      gd = { "lsp_definitions", "Lsp definition (Telescope)" },
+      gD = { "lsp_type_definitions", "Lsp type definitions (Telescope)" },
+      gr = { "lsp_references", "Lsp references (Telescope)" },
+      gi = { "lsp_implementations", "Lsp implementations (Telescope)" },
+      gO = {
+        "lsp_document_symbols",
+        "Document symbols (Telescope, filtered)",
+        {
+          symbols = {
+            "class",
+            "struct",
+            "interface",
+            "enum",
+            "method",
+            "function",
+            "constructor",
+            "property",
+            "field",
+            "variable",
+          },
+        },
+      },
+    }
+
+    if client and client.name == "omnisharp" then
+      handlers = require("omnisharp_extended")
+      mappings = {
+        gd = { "telescope_lsp_definition", "Go to definition (OmniSharp)" },
+        gD = { "telescope_lsp_type_definition", "Go to type definition (OmniSharp)" },
+        gr = { "telescope_lsp_references", "Go to references (OmniSharp)" },
+        gi = { "telescope_lsp_implementation", "Go to implementation (OmniSharp)" },
+      }
+    else
+      handlers = require("telescope.builtin")
+    end
+
+    for lhs, mapping in pairs(mappings) do
+      local method = mapping[1]
+      local opts = mapping[3]
+      vim.keymap.set("n", lhs, function()
+        if opts then
+          handlers[method](opts)
+        else
+          handlers[method]()
+        end
+      end, { buffer = bufnr, desc = mapping[2] })
+    end
+  end,
+})
 
 for _, lsp in ipairs(servers) do
   local config = {
@@ -189,38 +234,6 @@ for _, lsp in ipairs(servers) do
         },
       },
     })
-
-    config.on_attach = function(client, bufnr)
-      nvlsp.on_attach(client, bufnr)
-      vim.keymap.set("n", "gd", function()
-        require("omnisharp_extended").telescope_lsp_definition()
-      end, {
-        buffer = bufnr,
-        noremap = true,
-        desc = "Go to definition (Omnisharp)",
-      })
-      vim.keymap.set("n", "gD", function()
-        require("omnisharp_extended").telescope_lsp_type_definition()
-      end, {
-        buffer = bufnr,
-        noremap = true,
-        desc = "Go to type definition (Omnisharp)",
-      })
-      vim.keymap.set("n", "gr", function()
-        require("omnisharp_extended").telescope_lsp_references()
-      end, {
-        buffer = bufnr,
-        noremap = true,
-        desc = "Go to references (OmniSharp)",
-      })
-      vim.keymap.set("n", "gi", function()
-        require("omnisharp_extended").telescope_lsp_implementation()
-      end, {
-        buffer = bufnr,
-        noremap = true,
-        desc = "Go to implementation (OmniSharp)",
-      })
-    end
   elseif lsp == "kotlin_lsp" then
     config.cmd = { "kotlin-lsp", "--stdio" }
   end

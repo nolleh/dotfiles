@@ -86,7 +86,7 @@ map("n", "<leader>ax", function()
   local current = vim.fn.bufnr("%")
   local buffers = vim.api.nvim_list_bufs()
   for _, buf in ipairs(buffers) do
-    if buf ~= current and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buftype ~= "terminal" then
+    if buf ~= current and vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted and vim.bo[buf].buftype == "" then
       pcall(vim.api.nvim_buf_delete, buf, {})
     end
   end

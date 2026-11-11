@@ -1,0 +1,4 @@
+interface:
+  display_name: "Task Handoff"
+  short_description: "Record and resume work across coding sessions."
+  default_prompt: "Use $task-handoff to save or update this task's workspace, branch, progress, decisions, and next steps in ~/Documents/tasks so a fresh session can resume it."

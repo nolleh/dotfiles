@@ -82,6 +82,13 @@ local plugins = {
           max = 40,
         },
       },
+      actions = {
+        open_file = {
+          window_picker = {
+            picker = require("custom.configs.nvimtree_picker").pick,
+          },
+        },
+      },
       on_attach = function(bufnr)
         local api = require("nvim-tree.api")
         api.config.mappings.default_on_attach(bufnr)

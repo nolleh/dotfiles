@@ -14,11 +14,34 @@ M.base46 = {
   -- },
 }
 
+M.ui = {
+  statusline = {
+    order = {
+      "mode",
+      "file",
+      "git",
+      "%=",
+      "lsp_msg",
+      "%=",
+      "diagnostics",
+      "lsp",
+      "sqlflick",
+      "cwd",
+      "cursor",
+    },
+    modules = {
+      sqlflick = function()
+        local sqlflick = package.loaded["sqlflick"]
+        if not sqlflick or not sqlflick.statusline then
+          return ""
+        end
+
+        return sqlflick.statusline()
+      end,
+    },
+  },
+}
+
 -- M.nvdash = { load_on_startup = true }
--- M.ui = {
---       tabufline = {
---          lazyload = false
---      }
---}
 
 return M

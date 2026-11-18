@@ -606,6 +606,17 @@ local plugins = {
     end,
   },
 
+  {
+    "nolleh/omniac.nvim",
+    dir = vim.fn.expand("~/Documents/workspace_github/omniac.nvim"),
+    lazy = false,
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "MeanderingProgrammer/render-markdown.nvim",
+    },
+    opts = {},
+  },
+
   -- {
   --   "nolleh/claudecode.nvim",
   --   dependencies = { "folke/snacks.nvim" },

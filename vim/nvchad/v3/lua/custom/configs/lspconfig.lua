@@ -235,7 +235,28 @@ for _, lsp in ipairs(servers) do
       },
     })
   elseif lsp == "kotlin_lsp" then
-    config.cmd = { "kotlin-lsp", "--stdio" }
+    local mason_bin = vim.fn.stdpath('data') .. "/mason/bin"
+
+    config.cmd = {
+      mason_bin .. "/intellij-server",
+      "--stdio"
+    }
+    config.filetypes = { "kotlin" }
+    config.root_dir = function(bufnr, on_dir)
+      local fname = vim.api.nvim_buf_get_name(bufnr)
+      local root = util.root_pattern(
+        "settings.gradle",
+        "settings.gradle.kts",
+        "build.gradle",
+        "build.gradle.kts",
+        "pom.xml",
+        ".git"
+      )(fname)
+
+      if root then
+        on_dir(root)
+      end
+    end
   end
 
   vim.lsp.config(lsp, config)

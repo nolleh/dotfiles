@@ -1,3 +1,5 @@
+local omniac_dir = vim.fn.expand("~/Documents/workspace_github/omniac.nvim")
+
 local plugins = {
   {
     "stevearc/conform.nvim",
@@ -608,7 +610,8 @@ local plugins = {
 
   {
     "nolleh/omniac.nvim",
-    dir = vim.fn.expand("~/Documents/workspace_github/omniac.nvim"),
+    -- Use the development checkout when available; otherwise install from GitHub.
+    dir = vim.fn.isdirectory(omniac_dir) == 1 and omniac_dir or nil,
     lazy = false,
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
